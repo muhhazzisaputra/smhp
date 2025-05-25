@@ -5,11 +5,12 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/home', 'Home::index');
-$routes->get('/dashboard', 'Dashboard::index');
+
 $routes->get('/', 'Auth::index');
 $routes->post('/auth/process', 'Auth::process');
 $routes->get('/logout', 'Auth::logout');
+$routes->get('/home', 'Home::index');
+$routes->get('/dashboard', 'Dashboard::index');
 
 $routes->get('users', 'Users::index'); // To show the view with DataTable
 $routes->post('users/datatables', 'Users::datatables'); // Server-side endpoint for DataTable
@@ -56,6 +57,3 @@ $routes->post('hasil_produksi/export_xls', 'HasilProduksi::export_xls');
 $routes->get('speed_temperatur', 'SpeedTemperatur::index');
 $routes->post('speed_temperatur/datatables', 'SpeedTemperatur::datatables');
 $routes->post('speed_temperatur/export_xls', 'SpeedTemperatur::export_xls');
-
-$routes->get('/menu', 'MenuController::index');
-$routes->get('/setting_menu', 'Home::setting_menu');

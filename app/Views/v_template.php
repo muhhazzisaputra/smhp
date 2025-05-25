@@ -44,9 +44,31 @@
   * sidebar-mini
 -->
 <?php 
+    $this->db = \Config\Database::connect();
+
     $router         = service('router');
     $fullController = $router->controllerName(); // \App\Controllers\Produk
     $controllerName = class_basename($fullController); // Produk
+    $pathAlias      = $router->getMatchedRoute()[0];
+
+    $idGroup = session()->get('id_group');
+    $adminIT = ($idGroup==1) ? TRUE : FALSE;
+
+    if(!$adminIT) {
+        $role = $this->db->table('tb_akses_menu')->select('*')->where('IdGroup',$idGroup)->get()->getResultArray();
+
+        $arr_role  = [];
+        $arr_subid = [];
+        if(count($role) > 0) {
+            foreach($role as $rol) {
+                array_push($arr_role, $rol['IdMenu']);
+                array_push($arr_subid, $rol['IdSubMenu']);
+            } 
+
+        }
+    }
+
+    $menus = $this->db->table('tb_menu')->select('*')->orderBy('Urutan','ASC')->get()->getResultArray();
 ?>
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
@@ -89,51 +111,33 @@
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                     <!-- Add icons to the links using the .nav-icon class
                        with font-awesome or any other icon font library -->
-                    <li class="nav-item">
-                        <a href="/dashboard" class="nav-link <?php echo ($controllerName=="Dashboard") ? 'active' : '' ?>">
-                            <i class="nav-icon fas fa-tachometer-alt"></i>
-                            <p>Dashboard</p>
-                        </a>
-                    </li>
-                    <!-- <li class="nav-header">MASTER DATA</li> -->
-                    <li class="nav-item">
-                        <a href="/mesin" class="nav-link <?php echo ($controllerName=="Mesin") ? 'active' : '' ?>">
-                          <i class="fas fa-cogs nav-icon"></i>
-                          <p>Data Mesin</p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/pegawai" class="nav-link <?php echo ($controllerName=="Pegawai") ? 'active' : '' ?>">
-                          <i class="fas fa-users nav-icon"></i>
-                          <p>Data Karyawan</p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/produk" class="nav-link <?php echo ($controllerName=="Produk") ? 'active' : '' ?>">
-                          <i class="fas fa-archive nav-icon"></i>
-                          <p>Data Produk</p>
-                        </a>
-                    </li>
-                    <!-- <li class="nav-header">PRODUKSI</li> -->
-                    <li class="nav-item">
-                        <a href="/hasil_produksi" class="nav-link <?php echo ($controllerName=="HasilProduksi") ? 'active' : '' ?>">
-                          <i class="fas fa-file-signature nav-icon"></i>
-                          <p>Hasil Produksi</p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/speed_temperatur" class="nav-link <?php echo ($controllerName=="SpeedTemperatur") ? 'active' : '' ?>">
-                          <i class="fas fa-temperature-high nav-icon"></i>
-                          <p>Speed & Temperatur</p>
-                        </a>
-                    </li>
-                    <!-- <li class="nav-header">LAPORAN</li> -->
-                    <li class="nav-item">
-                        <a href="/hasil_produksi" class="nav-link">
-                          <i class="fas fa-file-signature nav-icon"></i>
-                          <p>Lap. Hasil Produksi</p>
-                        </a>
-                    </li>
+    <?php 
+        if(count($menus) > 0) {
+            foreach($menus as $menu) {
+                if($adminIT) {
+                    if($menu['IsParent'] == '1') { ?>
+                        <li class="nav-item">
+                            <a href="/<?php echo $menu['PathController'] ?>" class="nav-link <?php echo ($pathAlias==$menu['PathController']) ? 'active' : '' ?>">
+                                <i class="nav-icon <?php echo $menu['Icon'] ?>"></i>
+                                <p><?php echo $menu['NamaMenu'] ?></p>
+                            </a>
+                        </li>
+                        <?php 
+                    }
+                } else {
+                     if(in_array($menu['IdMenu'], $arr_role)) { ?>
+                        <li class="nav-item">
+                            <a href="/<?php echo $menu['PathController'] ?>" class="nav-link <?php echo ($pathAlias==$menu['PathController']) ? 'active' : '' ?>">
+                                <i class="nav-icon <?php echo $menu['Icon'] ?>"></i>
+                                <p><?php echo $menu['NamaMenu'] ?></p>
+                            </a>
+                        </li>
+                        <?php
+                    }
+                }
+            }
+        }
+    ?>              
                     <li class="nav-item">
                         <a href="/logout" class="nav-link">
                           <i class="nav-icon fas fa-sign-out-alt"></i>

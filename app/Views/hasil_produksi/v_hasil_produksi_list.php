@@ -178,7 +178,7 @@
 
 	    $('#produksiTable_length').append(`<button type="button" style="margin-left: 17px;" class="btn btn-sm bg-purple" data-toggle="modal" data-target="#modal-filter"><i class="fas fa-filter"></i> Filter Data</button>`);
 
-	    $('.select2bs4').select2({
+	    $('#produk_src').select2({
           	theme: 'bootstrap4'
         });
 

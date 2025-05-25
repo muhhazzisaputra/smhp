@@ -25,7 +25,7 @@ class Auth extends BaseController
         $user     = $userModel->where('IdKaryawan', $nip)->first();
 
         if ($user && password_verify($password, $user['Password'])) {
-            session()->set(['id_user' => $user['IdKaryawan'], 'logged_in' => true, 'group_id' => $user['Role']]);
+            session()->set(['id_user' => $user['IdKaryawan'], 'logged_in' => true, 'id_group' => $user['Role']]);
             return $this->response->setJSON(['status' => 'success']);
         } else {
             return $this->response->setJSON(['status' => 'error', 'message' => 'Invalid credentials']);

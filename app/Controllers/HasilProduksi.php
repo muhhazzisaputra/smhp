@@ -254,8 +254,8 @@ class HasilProduksi extends BaseController
         $JamSelesai = "";
         if($id_shift) {
             $shift = $this->ShiftModel->getRow($id_shift);
-            $JamMulai   = $shift->JamMulai;
-            $JamSelesai = $shift->JamSelesai;
+            $JamMulai   = substr($shift->JamMulai, 0, 5);
+            $JamSelesai = substr($shift->JamSelesai, 0, 5);
         }
 
         $result = ['JamMulai' => $JamMulai, 'JamSelesai' => $JamSelesai];
