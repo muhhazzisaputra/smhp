@@ -79,7 +79,7 @@
 	              				<td style="width: 64px;">Operator</td>
 	              				<td style="width: 13px;">:</td>
 	              				<td style="width: 290px;">
-	              					<select class="form-control form-control-sm select2bs4" name="operator_src" id="operator_src" style="width: 280px;">
+	              					<select class="form-control form-control-sm" name="operator_src" id="operator_src" style="width: 280px;">
 			                            <option value="">-Pilih-</option>
 	                                    <?php foreach($operator as $opt) { ?>
 	                                        <option value="<?php echo $opt->IdKaryawan ?>"><?php echo $opt->IdKaryawan.' - '.$opt->NamaKaryawan ?></option>
@@ -121,6 +121,10 @@
 
 <script type="text/javascript">
 	$(document).ready(function () {
+		$('#operator_src').select2({
+		  	theme: 'bootstrap4'
+		});
+		
 	    let table = $('#produksiTable').DataTable({
 	        processing: true,
 	        serverSide: true,
@@ -177,10 +181,6 @@
 	    });
 
 	    $('#produksiTable_length').append(`<button type="button" style="margin-left: 17px;" class="btn btn-sm bg-purple" data-toggle="modal" data-target="#modal-filter"><i class="fas fa-filter"></i> Filter Data</button>`);
-
-	    $('#produk_src').select2({
-          	theme: 'bootstrap4'
-        });
 
         $('.dateclass').datepicker({
 	        autoclose     : true,

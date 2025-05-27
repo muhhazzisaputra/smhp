@@ -180,7 +180,7 @@ class HasilProduksi extends BaseController
         $tgl2_src = $request->getPost('tgl2_src');
 
         $tgl_src  = (!empty($tgl_src)) ? $tgl_src : date('Y-m-01');
-        $tgl2_src = (!empty($tg2l_src)) ? $tgl2_src : date('Y-m-d');
+        $tgl2_src = (!empty($tgl2_src)) ? $tgl2_src : date('Y-m-d');
 
         $builder->where("a.TglProduksi BETWEEN '$tgl_src' AND  '$tgl2_src'");
 

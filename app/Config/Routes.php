@@ -57,3 +57,10 @@ $routes->post('hasil_produksi/export_xls', 'HasilProduksi::export_xls');
 $routes->get('speed_temperatur', 'SpeedTemperatur::index');
 $routes->post('speed_temperatur/datatables', 'SpeedTemperatur::datatables');
 $routes->post('speed_temperatur/export_xls', 'SpeedTemperatur::export_xls');
+
+// Laporan Produksi
+$routes->get('laporan_hasil_produksi', 'LaporanProduksi::index');
+$routes->post('laporan_hasil_produksi/pilih_format', 'LaporanProduksi::pilih_format');
+$routes->post('laporan_hasil_produksi/view_data', 'LaporanProduksi::view_data');
+$routes->post('laporan_hasil_produksi/view_data/(:any)', 'LaporanProduksi::view_data/xls');
+$routes->post('laporan_hasil_produksi/detail_hasil_pertgl', 'LaporanProduksi::detail_hasil_pertgl');

@@ -39,4 +39,49 @@ class HasilProduksiModel extends Model
         return $result;
     }
 
+    public function getPivotData($date1, $date2, $produk_src="", $dateList) {
+        $builder = $this->db->table('tb_hasil_produksi a');
+        $builder->select("a.IdProduk, b.NamaProduk, a.TglProduksi, SUM(a.QtyHasil) as total_qty");
+        $builder->join('tb_produk b', 'b.IdProduk = a.IdProduk', 'left');
+        $builder->where('a.TglProduksi >=', $date1);
+        $builder->where('a.TglProduksi <=', $date2);
+        if($produk_src) {
+            $builder->where('a.IdProduk', $produk_src);
+        }
+        $builder->groupBy("a.IdProduk, a.TglProduksi, b.NamaProduk");
+        $builder->orderBy("b.NamaProduk");
+        $query = $builder->get()->getResultArray();
+
+        // Initialize all rows for each product with 0s for all dates
+        $pivot = [];
+
+        foreach ($query as $row) {
+            $id_produk = $row['IdProduk'];
+            $produk    = $row['NamaProduk'];
+            $tanggal   = $row['TglProduksi'];
+            $qty       = $row['total_qty'];
+
+            if (!isset($pivot[$produk])) {
+                $pivot[$produk]['Produk'] = $produk;
+                foreach ($dateList as $date) {
+                    $pivot[$produk][$date] = 0.00;
+                }
+            }
+
+            $pivot[$produk][$tanggal]   = $qty;
+            $pivot[$produk]['IdProduk'] = $id_produk;
+        }
+
+        // Ensure all products and dates are initialized even if no data
+        foreach ($pivot as &$row) {
+            foreach ($dateList as $date) {
+                if (!isset($row[$date])) {
+                    $row[$date] = 0.00;
+                }
+            }
+        }
+
+        return $pivot;
+    }
+
 }
