@@ -43,6 +43,7 @@ class LaporanProduksi extends BaseController
         $format         = $this->request->getPost('format');
         $data['format'] = $format;
         $data['shift']  = $this->ShiftModel->getResult();
+        $data['mesin']  = $this->MesinModel->getResult();
         $data['produk'] = $this->ProdukModel->getResult();
 
         $data['opt_format'] = '
@@ -51,10 +52,11 @@ class LaporanProduksi extends BaseController
             <td style="width: 100px;">
                 <select class="form-control" name="format" id="format" style="width: 200px;" onchange="pilih_format(this)">
                     <option value="">-Pilih-</option>
-                    <option value="per_tgl"'.(($format=='per_tgl') ? ' selected' : '').'>Produksi Per Tanggal</option>
-                    <option value="per_shift"'.(($format=='per_shift') ? ' selected' : '').'>Produksi Per Shift</option>
-                    <option value="per_mesin"'.(($format=='per_mesin') ? ' selected' : '').'>Produksi Per Mesin</option>
-                    <option value="per_operator"'.(($format=='per_operator') ? ' selected' : '').'>Produksi Per Operator</option>
+                    <option value="per_tgl"'.(($format=='per_tgl') ? ' selected' : '').'>1. Produksi Per Tanggal</option>
+                    <option value="per_shift"'.(($format=='per_shift') ? ' selected' : '').'>2. Produksi Per Shift</option>
+                    <option value="per_mesin"'.(($format=='per_mesin') ? ' selected' : '').'>3. Produksi Per Mesin</option>
+                    <option value="per_operator"'.(($format=='per_operator') ? ' selected' : '').'>4. Produksi Per Operator</option>
+                    <option value="tidak_mencapai_target"'.(($format=='tidak_mencapai_target') ? ' selected' : '').'>5. Produksi Tidak Mencapai Target</option>
                 </select>
             </td>';
 
@@ -75,16 +77,27 @@ class LaporanProduksi extends BaseController
     }
 
     public function view_data($xls="") {
-        // echo '<pre>'; print_r($_POST); die;
+        $format = $this->request->getPost('format');
+
+        if($format=="per_tgl") {
+            return $this->produksi_per_tgl($xls);
+        } else if($format=="per_shift") {
+            return $this->produksi_per_shift($xls);
+        } else if($format=="per_mesin") {
+            return $this->produksi_per_mesin($xls);
+        }
+    }
+
+    public function produksi_per_tgl($xls="") {
         $format     = $this->request->getPost('format');
-        $tgl_src    = $this->request->getPost('tgl_src') ?? '2025-05-18';
-        $tgl2_src   = $this->request->getPost('tgl2_src') ?? '2025-05-23';
+        $tgl_src    = $this->request->getPost('tgl_src');
+        $tgl2_src   = $this->request->getPost('tgl2_src');
         $produk_src = $this->request->getPost('produk_src');
     
         $dateList = $this->generateDateRange($tgl_src, $tgl2_src);
 
         $pivotData = $this->HasilProduksiModel->getPivotData($tgl_src, $tgl2_src, $produk_src, $dateList);
-
+        
         $data['dates'] = $dateList;
         $data['pivot'] = $pivotData;
         $data['date1'] = $tgl_src;
@@ -138,11 +151,180 @@ class LaporanProduksi extends BaseController
         }
     }
 
-    function detail_hasil_pertgl() {
+    public function detail_hasil_pertgl($xls="") {
         $tgl_produksi = $this->request->getPost('tgl_produksi');
         $id_produk    = $this->request->getPost('id_produk');
 
-        return view('laporan_produksi/v_laporan_produksi_pertgl_detail', $data);
+        $data['row']    = $this->HasilProduksiModel->getPerTgl($tgl_produksi,$id_produk)->getRow();
+        $data['detail'] = $this->HasilProduksiModel->getPerTgl($tgl_produksi,$id_produk)->getResult();
+
+        if($xls) {
+            $html     = view('laporan_produksi/v_laporan_produksi_pertgl_detail_xls', $data);
+            // die;
+            $tempFile = tempnam(sys_get_temp_dir(), 'html');
+            file_put_contents($tempFile, $html);
+            $numberFormat = '#,##0.00';
+            $reader       = new Html();
+            $spreadsheet  = $reader->load($tempFile);
+
+            unlink($tempFile);
+
+            $sheet       = $spreadsheet->getActiveSheet();
+            $lastColumn  = $sheet->getHighestColumn();
+            $lastRow     = $sheet->getHighestRow();
+            $array_alpha = ["H","I"];
+            for ($i=1; $i <= $lastRow ; $i++) {
+                foreach(range('A', $lastColumn) as $columnID) {
+                    $spreadsheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
+                    // $cek_alpha = in_array($columnID,$array_alpha);
+                    // if($cek_alpha){
+                    //     $sheet->getStyle($columnID.$i)->getNumberFormat()->setFormatCode($numberFormat);
+                    // }
+                }
+            }
+
+            $cellRange = 'A1:' . $lastColumn . $lastRow;
+            $style     = $spreadsheet->getActiveSheet()->getStyle($cellRange);
+            $borders   = $style->getBorders();
+            $borders->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+            $writer = new Xlsx($spreadsheet);
+
+            // Clean output buffer to avoid corruption
+            ob_end_clean();
+
+            // Headers to force download
+            return $this->response
+                ->setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                ->setHeader('Content-Disposition', 'attachment;filename="Detail Hasil Produksi Per Tanggal.xlsx"')
+                ->setHeader('Cache-Control', 'max-age=0')
+                ->setBody(write_excel_to_output($writer));
+        } else {
+            return view('laporan_produksi/v_laporan_produksi_pertgl_detail', $data);
+        }
+    }
+
+    public function produksi_per_shift() {
+        // echo '<pre>';
+        // print_r($_POST);
+        // die;
+        
+    }
+
+    public function produksi_per_mesin($xls="") {
+        $format     = $this->request->getPost('format');
+        $tgl_src    = $this->request->getPost('tgl_src');
+        $mesin_src  = $this->request->getPost('mesin_src');
+        $produk_src = $this->request->getPost('produk_src');
+
+        $bulan = date('n', strtotime($tgl_src));
+
+        $pivotData = $this->HasilProduksiModel->getPerMesin($bulan,$mesin_src,$produk_src);
+
+        $data['pivot'] = $pivotData;
+        $data['date1'] = $tgl_src;
+        $data['mesin'] = $this->MesinModel->getResult();
+
+        if($xls) {
+            $html = view('laporan_produksi/v_laporan_produksi_permesin_xls', $data);
+            // die;
+            $tempFile = tempnam(sys_get_temp_dir(), 'html');
+            file_put_contents($tempFile, $html);
+            $numberFormat = '#,##0.00';
+            $reader       = new Html();
+            $spreadsheet  = $reader->load($tempFile);
+
+            unlink($tempFile);
+
+            $sheet       = $spreadsheet->getActiveSheet();
+            $lastColumn  = $sheet->getHighestColumn();
+            $lastRow     = $sheet->getHighestRow();
+            $array_alpha = ["H","I"];
+            for ($i=1; $i <= $lastRow ; $i++) {
+                foreach(range('A', $lastColumn) as $columnID) {
+                    $spreadsheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
+                    // $cek_alpha = in_array($columnID,$array_alpha);
+                    // if($cek_alpha){
+                    //     $sheet->getStyle($columnID.$i)->getNumberFormat()->setFormatCode($numberFormat);
+                    // }
+                }
+            }
+
+            $cellRange = 'A1:' . $lastColumn . $lastRow;
+            $style     = $spreadsheet->getActiveSheet()->getStyle($cellRange);
+            $borders   = $style->getBorders();
+            $borders->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+            $writer = new Xlsx($spreadsheet);
+
+            // Clean output buffer to avoid corruption
+            ob_end_clean();
+
+            // Headers to force download
+            return $this->response
+                ->setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                ->setHeader('Content-Disposition', 'attachment;filename="Laporan Hasil Produksi Per Mesin.xlsx"')
+                ->setHeader('Cache-Control', 'max-age=0')
+                ->setBody(write_excel_to_output($writer));
+        } else {
+            return view('laporan_produksi/v_laporan_produksi_permesin', $data);
+        }
+
+    }
+
+    public function detail_hasil_permesin($xls="") {
+        $id_mesin  = $this->request->getPost('id_mesin');
+        $id_produk = $this->request->getPost('id_produk');
+        $bulan     = $this->request->getPost('bulan');
+        $bulan     = date('n', strtotime($bulan));
+
+        $data['row']    = $this->HasilProduksiModel->detailPerMesin($bulan,$id_mesin,$id_produk)->getRow();
+        $data['detail'] = $this->HasilProduksiModel->detailPerMesin($bulan,$id_mesin,$id_produk)->getResult();
+
+        if($xls) {
+            $html = view('laporan_produksi/v_laporan_produksi_permesin_detail_xls', $data);
+            // die;
+            $tempFile = tempnam(sys_get_temp_dir(), 'html');
+            file_put_contents($tempFile, $html);
+            $numberFormat = '#,##0.00';
+            $reader       = new Html();
+            $spreadsheet  = $reader->load($tempFile);
+
+            unlink($tempFile);
+
+            $sheet       = $spreadsheet->getActiveSheet();
+            $lastColumn  = $sheet->getHighestColumn();
+            $lastRow     = $sheet->getHighestRow();
+            $array_alpha = ["H","I"];
+            for ($i=1; $i <= $lastRow ; $i++) {
+                foreach(range('A', $lastColumn) as $columnID) {
+                    $spreadsheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
+                    // $cek_alpha = in_array($columnID,$array_alpha);
+                    // if($cek_alpha){
+                    //     $sheet->getStyle($columnID.$i)->getNumberFormat()->setFormatCode($numberFormat);
+                    // }
+                }
+            }
+
+            $cellRange = 'A1:' . $lastColumn . $lastRow;
+            $style     = $spreadsheet->getActiveSheet()->getStyle($cellRange);
+            $borders   = $style->getBorders();
+            $borders->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+            $writer = new Xlsx($spreadsheet);
+
+            // Clean output buffer to avoid corruption
+            ob_end_clean();
+
+            // Headers to force download
+            return $this->response
+                ->setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                ->setHeader('Content-Disposition', 'attachment;filename="Detail Hasil Produksi Per Mesin.xlsx"')
+                ->setHeader('Cache-Control', 'max-age=0')
+                ->setBody(write_excel_to_output($writer));
+        } else {
+            return view('laporan_produksi/v_laporan_produksi_permesin_detail', $data);
+        }
     }
 
 }

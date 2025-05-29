@@ -1,6 +1,6 @@
 <style type="text/css">
     tfoot td {
-        font-weight: 900;
+        font-weight: bold;
         background-color: #f0f0f0;
     }
 </style>

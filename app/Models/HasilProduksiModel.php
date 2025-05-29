@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use App\Models\MesinModel;
 
 class HasilProduksiModel extends Model
 {
 
-    protected $table            = 'tb_hasil_produksi';
-    protected $primaryKey       = 'IdProduksi';
+    protected $table      = 'tb_hasil_produksi';
+    protected $primaryKey = 'IdProduksi';
 
     public function getMaxCode() {
         $prefix = 'PR' . date('Ymd'); // e.g., PR20250506
@@ -62,18 +63,18 @@ class HasilProduksiModel extends Model
             $qty       = $row['total_qty'];
 
             if (!isset($pivot[$produk])) {
-                $pivot[$produk]['Produk'] = $produk;
+                $pivot[$produk]['Produk']   = $produk;
+                $pivot[$produk]['IdProduk'] = $id_produk;
                 foreach ($dateList as $date) {
                     $pivot[$produk][$date] = 0.00;
                 }
             }
 
             $pivot[$produk][$tanggal]   = $qty;
-            $pivot[$produk]['IdProduk'] = $id_produk;
         }
 
         // Ensure all products and dates are initialized even if no data
-        foreach ($pivot as &$row) {
+        foreach ($pivot as $row) {
             foreach ($dateList as $date) {
                 if (!isset($row[$date])) {
                     $row[$date] = 0.00;
@@ -82,6 +83,117 @@ class HasilProduksiModel extends Model
         }
 
         return $pivot;
+    }
+
+    function getPerTgl($tgl="", $id_produk="") {
+        $sql = "SELECT a.IdProduksi,a.TglProduksi,a.Shift,a.IdMesin,a.QtyHasil,a.QtyWaste,b.NamaKaryawan,a.Shift,c.NoMesin,a.IdProduk,d.NamaProduk
+            FROM tb_hasil_produksi a
+            LEFT JOIN tb_karyawan b ON b.IdKaryawan=a.IdKaryawan
+            LEFT JOIN tb_mesin c ON c.IdMesin=a.IdMesin
+            LEFT JOIN tb_produk d ON d.IdProduk=a.IdProduk
+            WHERE a.TglProduksi='$tgl' AND a.IdProduk='$id_produk'
+            ORDER BY a.Shift,c.NoMesin";
+
+        return $this->db->query($sql);
+    }
+
+    function getPerShift($bulan="",$mesin_src="",$produk_src="") {
+        $this->MesinModel = new MesinModel();
+
+        $builder = $this->db->table('tb_hasil_produksi a');
+        $builder->select("a.IdProduk, b.NamaProduk, a.IdMesin, SUM(a.QtyHasil) as total_qty");
+        $builder->join('tb_produk b', 'b.IdProduk = a.IdProduk', 'left');
+        $builder->where('MONTH(a.TglProduksi)', $bulan);
+        $builder->groupBy("a.IdProduk, a.IdMesin, b.NamaProduk");
+        $builder->orderBy("b.NamaProduk");
+        $query = $builder->get()->getResultArray();
+        // echo '<pre>';
+        // print_r($query);
+        // die;
+
+        $dataMesin = $this->MesinModel->getResult();
+
+        // Initialize all rows for each product with 0s for all dates
+        $pivot = [];
+
+        foreach ($query as $row) {
+            $id_produk = $row['IdProduk'];
+            $produk    = $row['NamaProduk'];
+            $id_mesin  = $row['IdMesin'];
+            $qty       = $row['total_qty'];
+
+            if (!isset($pivot[$produk])) {
+                $pivot[$produk]['Produk']   = $produk;
+                $pivot[$produk]['IdProduk'] = $id_produk;
+
+                foreach ($dataMesin as $mesin) {
+                    $pivot[$produk][$mesin->IdMesin] = 0.00;
+                }
+            }
+
+            $pivot[$produk][$id_mesin] = $qty;
+        }
+
+        return $pivot;
+    }
+
+    function getPerMesin($bulan="",$mesin_src="",$produk_src="") {
+        $this->MesinModel = new MesinModel();
+
+        $builder = $this->db->table('tb_hasil_produksi a');
+        $builder->select("a.IdProduk, b.NamaProduk, a.IdMesin, SUM(a.QtyHasil) as total_qty");
+        $builder->join('tb_produk b', 'b.IdProduk = a.IdProduk', 'left');
+        $builder->where('MONTH(a.TglProduksi)', $bulan);
+        if($produk_src) {
+            $builder->where('a.IdProduk', $produk_src);
+        }
+        if($mesin_src) {
+            $builder->where('a.IdMesin', $mesin_src);
+        }
+        $builder->groupBy("a.IdProduk, a.IdMesin, b.NamaProduk");
+        $builder->orderBy("b.NamaProduk");
+        $query = $builder->get()->getResultArray();
+        // echo '<pre>';
+        // print_r($query);
+        // die;
+
+        $dataMesin = $this->MesinModel->getResult();
+
+        // Initialize all rows for each product with 0s for all dates
+        $pivot = [];
+
+        foreach ($query as $row) {
+            $id_produk = $row['IdProduk'];
+            $produk    = $row['NamaProduk'];
+            $id_mesin  = $row['IdMesin'];
+            $qty       = $row['total_qty'];
+
+            if (!isset($pivot[$produk])) {
+                $pivot[$produk]['Produk']   = $produk;
+                $pivot[$produk]['IdProduk'] = $id_produk;
+
+                foreach ($dataMesin as $mesin) {
+                    $pivot[$produk][$mesin->IdMesin] = 0.00;
+                }
+            }
+
+            $pivot[$produk][$id_mesin] = $qty;
+        }
+
+        return $pivot;
+    }
+
+    function detailPerMesin($bulan="",$id_mesin="",$id_produk="") {
+        $sql = "SELECT a.IdProduksi,a.TglProduksi,a.Shift,a.IdMesin,a.QtyHasil,a.QtyWaste,b.NamaKaryawan,a.Shift,c.NoMesin,a.IdProduk
+        ,d.NamaProduk
+        FROM tb_hasil_produksi a
+        LEFT JOIN tb_karyawan b ON b.IdKaryawan=a.IdKaryawan
+        LEFT JOIN tb_mesin c ON c.IdMesin=a.IdMesin
+        LEFT JOIN tb_produk d ON d.IdProduk=a.IdProduk
+        WHERE MONTH(a.TglProduksi)=$bulan AND a.IdMesin='$id_mesin' AND A.IdProduk='$id_produk'
+        ORDER BY a.Shift,c.NoMesin";
+
+        return $this->db->query($sql);
     }
 
 }

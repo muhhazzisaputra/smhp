@@ -6,6 +6,9 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 
+// controller khusus utk testing
+$routes->get('/testing', 'Testing::index');
+
 $routes->get('/', 'Auth::index');
 $routes->post('/auth/process', 'Auth::process');
 $routes->get('/logout', 'Auth::logout');
@@ -64,3 +67,6 @@ $routes->post('laporan_hasil_produksi/pilih_format', 'LaporanProduksi::pilih_for
 $routes->post('laporan_hasil_produksi/view_data', 'LaporanProduksi::view_data');
 $routes->post('laporan_hasil_produksi/view_data/(:any)', 'LaporanProduksi::view_data/xls');
 $routes->post('laporan_hasil_produksi/detail_hasil_pertgl', 'LaporanProduksi::detail_hasil_pertgl');
+$routes->post('laporan_hasil_produksi/detail_hasil_pertgl/(:any)', 'LaporanProduksi::detail_hasil_pertgl/$1');
+$routes->post('laporan_hasil_produksi/detail_hasil_permesin', 'LaporanProduksi::detail_hasil_permesin');
+$routes->post('laporan_hasil_produksi/detail_hasil_permesin/(:any)', 'LaporanProduksi::detail_hasil_permesin/$1');

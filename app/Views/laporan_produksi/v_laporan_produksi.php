@@ -56,10 +56,11 @@
 		              				<td style="width: 100px;">
 		              					<select class="form-control" name="format" id="format" style="width: 200px;" onchange="pilih_format(this)">
 		              						<option value="">-Pilih-</option>
-		              						<option value="per_tgl">Produksi Per Tanggal</option>
-		              						<option value="per_shift">Produksi Per Shift</option>
-		              						<option value="per_mesin">Produksi Per Mesin</option>
-		              						<option value="per_operator">Produksi Per Operator</option>
+		              						<option value="per_tgl">1. Produksi Per Tanggal</option>
+		              						<option value="per_shift">2. Produksi Per Shift</option>
+		              						<option value="per_mesin">3. Produksi Per Mesin</option>
+		              						<option value="per_operator">4. Produksi Per Operator</option>
+		              						<option value="tidak_mencapai_target">5. Produksi Tidak Mencapai Target</option>
 		              					</select>
 		              				</td>
 		              			</tr>
@@ -79,6 +80,7 @@
 
 		$.post('<?php echo base_url() ?>laporan_hasil_produksi/pilih_format', {format}, function(data) {
 			$('#f_lap_produksi').html(data);
+			$('#view_data').empty();
 		});
 	}
 
@@ -87,6 +89,10 @@
 		$.post('<?php echo base_url() ?>laporan_hasil_produksi/view_data', $('#f_lap_produksi').serialize(), function(data) {
 		    $('#view_data').html(data);
 		    $('#loader').fadeOut('slow');
+		}).fail(function(data) {
+			$('#loader').fadeOut('slow');
+			error_notif('Terjadi suatu kesalahan. Hubungi Admin IT');
+			return false;
 		});
 	}
 </script>
