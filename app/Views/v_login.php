@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
+    <meta name="description" content="Sistem Monitoring Hasil Produksi">
+    <meta name="keywords" content="sistem monitoring, sistem produksi, hasil produksi">
+    <meta name="author" content="Muh. Hazzi Saputra">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SMHP | Log in</title>
 
