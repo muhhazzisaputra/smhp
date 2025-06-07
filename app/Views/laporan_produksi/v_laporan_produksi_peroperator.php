@@ -29,7 +29,7 @@
                 foreach ($karyawan as $kry) :
                     $val = $row[$kry] ?? 0; 
                     $rowTotal += $val; ?>
-                    <td style="text-align: right;"><span  style="color: blue; cursor: pointer;" onclick=""><?php echo ($row[$kry] > 0) ? number_format($row[$kry], 2) : '' ?></span></td>
+                    <td style="text-align: right;"><span  style="color: blue; cursor: pointer;" onclick="detail_hasil('<?php echo $tanggal ?>', '<?php echo $kry ?>');"><?php echo ($row[$kry] > 0) ? number_format($row[$kry], 2) : '' ?></span></td>
                 <?php endforeach; ?>
                 <td style="text-align: right;"><?php echo number_format($rowTotal, 2) ?></td>
             </tr>
@@ -38,10 +38,8 @@
 </table>
 
 <script type="text/javascript">
-    function detail_hasil(id_shift, id_produk) {
-        bulan = $('#tgl_src').val();
-
-        $.post('<?php echo base_url() ?>laporan_hasil_produksi/detail_hasil_pershift', {id_shift, id_produk, bulan}, function(data) {
+    function detail_hasil(tgl_produksi, id_operator) {
+        $.post('<?php echo base_url() ?>laporan_hasil_produksi/detail_hasil_peroperator', {tgl_produksi, id_operator}, function(data) {
             $('#modal_body_lg').html(data);
             $('#modal-lg').modal('show');
         });

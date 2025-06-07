@@ -24,7 +24,6 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           server-dir: /public_html/smhp/
           exclude: |
-            **/.git*
             **/app/Database/**
             **/app/Filters/**
             **/app/Helpers/**
