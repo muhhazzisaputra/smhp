@@ -1,14 +1,14 @@
 <div class="modal-body">
-    <h4>Detail Hasil Produksi Per Mesin</h4>
-    <form method="post" action="<?php echo base_url() ?>laporan_hasil_produksi/detail_hasil_permesin/xls" target="_blank">
+    <h4>Detail Hasil Produksi Per Shift</h4>
+    <form method="post" action="<?php echo base_url() ?>laporan_hasil_produksi/detail_hasil_pershift/xls" target="_blank">
         <input type="hidden" name="bulan" value="<?php echo $row->TglProduksi ?>">
-        <input type="hidden" name="id_mesin" value="<?php echo $row->IdMesin ?>">
+        <input type="hidden" name="id_shift" value="<?php echo $row->Shift ?>">
         <input type="hidden" name="id_produk" value="<?php echo $row->IdProduk ?>">
         <table class="table table-sm table-borderless text-nowrap">
             <tr>
-                <td style="width: 65px;">No Mesin</td>
+                <td style="width: 65px;">Shift</td>
                 <td style="width: 13px;">:</td>
-                <td><?php echo $row->NoMesin ?></td>
+                <td><?php echo $row->Shift ?></td>
             </tr>
             <tr>
                 <td>Produk</td>
@@ -23,7 +23,7 @@
                         <th class="bg-info color-palette" style="font-weight: normal; text-align: center;">No.</th>
                         <th class="bg-info color-palette" style="font-weight: normal;">Id Produksi</th>
                         <th class="bg-info color-palette" style="font-weight: normal;">Tgl Produksi</th>
-                        <th class="bg-info color-palette" style="font-weight: normal; text-align: center;">Shift</th>
+                        <th class="bg-info color-palette" style="font-weight: normal; text-align: center;">No Mesin</th>
                         <th class="bg-info color-palette" style="font-weight: normal;">Operator</th>
                         <th class="bg-info color-palette" style="font-weight: normal; text-align: right;">Qty Hasil</th>
                         <th class="bg-info color-palette" style="font-weight: normal; text-align: right;">Qty Waste</th>
@@ -42,7 +42,7 @@
                             <td style="text-align: center;"><?php echo $no ?></td>
                             <td><?php echo $data->IdProduksi ?></td>
                             <td><?php echo $data->TglProduksi ?></td>
-                            <td style="text-align: center;"><?php echo $data->Shift ?></td>
+                            <td style="text-align: center;"><?php echo $data->NoMesin ?></td>
                             <td><?php echo $data->NamaKaryawan ?></td>
                             <td style="text-align: right;"><?php echo $data->QtyHasil ?></td>
                             <td style="text-align: right;"><?php echo $data->QtyWaste ?></td>

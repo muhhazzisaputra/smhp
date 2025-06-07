@@ -1,5 +1,6 @@
 <table>
     <tr>
+        <td rowspan="2">No.</td>
         <td rowspan="2">Produk</td>
         <td colspan="5" style="text-align: center;">No Mesin</td>
         <td rowspan="2">Total</td>
@@ -9,8 +10,9 @@
             <td><?php echo $msn->NoMesin ?></td>
         <?php endforeach; ?>
     </tr>
-    <?php foreach ($pivot as $produk => $row): ?>
+    <?php $no = 0; foreach ($pivot as $produk => $row): $no += 1; ?>
         <tr>
+            <td><?php echo $no ?></td>
             <td><?php echo esc($produk) ?></td>
             <?php 
             $rowTotal = 0; 
@@ -23,7 +25,7 @@
         </tr>
     <?php endforeach; ?>
     <tr>
-        <td>Total</td>
+        <td colspan="2" style="text-align: right;">Total</td>
         <?php
             $colTotals = [];
             $grandTotal = 0;

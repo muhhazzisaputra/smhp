@@ -1,6 +1,6 @@
 <table>
     <tr>
-        <td colspan="4">No Mesin : <?php echo $row->NoMesin ?></td>
+        <td colspan="4">Shift : <?php echo $row->Shift ?></td>
     </tr>
     <tr>
         <td colspan="4">Produk : <?php echo $row->NamaProduk ?></td>
@@ -11,7 +11,7 @@
         <td>No.</td>
         <td>Id Produksi</td>
         <td>Tgl Produksi</td>
-        <td style="text-align: center;">Shift</td>
+        <td style="text-align: center;">No Mesin</td>
         <td>Operator</td>
         <td style="text-align: right;">Qty Hasil</td>
         <td style="text-align: right;">Qty Waste</td>
@@ -25,18 +25,18 @@
         $totalQty   += $data->QtyHasil;
         $totalWaste += $data->QtyWaste; ?>
         <tr>
-            <td><?php echo $no ?></td>
+            <td style="text-align: center;"><?php echo $no ?></td>
             <td><?php echo $data->IdProduksi ?></td>
             <td><?php echo $data->TglProduksi ?></td>
-            <td style="text-align: center;"><?php echo $data->Shift ?></td>
+            <td style="text-align: center;"><?php echo $data->NoMesin ?></td>
             <td><?php echo $data->NamaKaryawan ?></td>
-            <td><?php echo $data->QtyHasil ?></td>
-            <td><?php echo $data->QtyWaste ?></td>
+            <td style="text-align: right;"><?php echo $data->QtyHasil ?></td>
+            <td style="text-align: right;"><?php echo $data->QtyWaste ?></td>
         </tr>
     <?php } ?>
-    <tr>
+    <tr style="font-weight: bold;">
         <td colspan="5" style="text-align: right;">Total</td>
-        <td><?php echo $totalQty ?></td>
-        <td><?php echo $totalWaste ?></td>
+        <td style="text-align: right;"><?php echo $totalQty ?></td>
+        <td style="text-align: right;"><?php echo $totalWaste ?></td>
     </tr>
 </table>

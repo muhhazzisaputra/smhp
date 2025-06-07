@@ -4,6 +4,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use App\Models\MesinModel;
+use App\Models\ShiftModel;
 
 class HasilProduksiModel extends Model
 {
@@ -86,7 +87,7 @@ class HasilProduksiModel extends Model
     }
 
     function getPerTgl($tgl="", $id_produk="") {
-        $sql = "SELECT a.IdProduksi,a.TglProduksi,a.Shift,a.IdMesin,a.QtyHasil,a.QtyWaste,b.NamaKaryawan,a.Shift,c.NoMesin,a.IdProduk,d.NamaProduk
+        $sql = "SELECT a.IdProduksi,a.TglProduksi,a.Shift,a.IdMesin,a.QtyHasil,a.QtyWaste,b.NamaKaryawan,c.NoMesin,a.IdProduk,d.NamaProduk
             FROM tb_hasil_produksi a
             LEFT JOIN tb_karyawan b ON b.IdKaryawan=a.IdKaryawan
             LEFT JOIN tb_mesin c ON c.IdMesin=a.IdMesin
@@ -95,46 +96,6 @@ class HasilProduksiModel extends Model
             ORDER BY a.Shift,c.NoMesin";
 
         return $this->db->query($sql);
-    }
-
-    function getPerShift($bulan="",$mesin_src="",$produk_src="") {
-        $this->MesinModel = new MesinModel();
-
-        $builder = $this->db->table('tb_hasil_produksi a');
-        $builder->select("a.IdProduk, b.NamaProduk, a.IdMesin, SUM(a.QtyHasil) as total_qty");
-        $builder->join('tb_produk b', 'b.IdProduk = a.IdProduk', 'left');
-        $builder->where('MONTH(a.TglProduksi)', $bulan);
-        $builder->groupBy("a.IdProduk, a.IdMesin, b.NamaProduk");
-        $builder->orderBy("b.NamaProduk");
-        $query = $builder->get()->getResultArray();
-        // echo '<pre>';
-        // print_r($query);
-        // die;
-
-        $dataMesin = $this->MesinModel->getResult();
-
-        // Initialize all rows for each product with 0s for all dates
-        $pivot = [];
-
-        foreach ($query as $row) {
-            $id_produk = $row['IdProduk'];
-            $produk    = $row['NamaProduk'];
-            $id_mesin  = $row['IdMesin'];
-            $qty       = $row['total_qty'];
-
-            if (!isset($pivot[$produk])) {
-                $pivot[$produk]['Produk']   = $produk;
-                $pivot[$produk]['IdProduk'] = $id_produk;
-
-                foreach ($dataMesin as $mesin) {
-                    $pivot[$produk][$mesin->IdMesin] = 0.00;
-                }
-            }
-
-            $pivot[$produk][$id_mesin] = $qty;
-        }
-
-        return $pivot;
     }
 
     function getPerMesin($bulan="",$mesin_src="",$produk_src="") {
@@ -184,16 +145,98 @@ class HasilProduksiModel extends Model
     }
 
     function detailPerMesin($bulan="",$id_mesin="",$id_produk="") {
-        $sql = "SELECT a.IdProduksi,a.TglProduksi,a.Shift,a.IdMesin,a.QtyHasil,a.QtyWaste,b.NamaKaryawan,a.Shift,c.NoMesin,a.IdProduk
+        $sql = "SELECT a.IdProduksi,a.TglProduksi,a.Shift,a.IdMesin,a.QtyHasil,a.QtyWaste,b.NamaKaryawan,c.NoMesin,a.IdProduk
         ,d.NamaProduk
         FROM tb_hasil_produksi a
         LEFT JOIN tb_karyawan b ON b.IdKaryawan=a.IdKaryawan
         LEFT JOIN tb_mesin c ON c.IdMesin=a.IdMesin
         LEFT JOIN tb_produk d ON d.IdProduk=a.IdProduk
         WHERE MONTH(a.TglProduksi)=$bulan AND a.IdMesin='$id_mesin' AND A.IdProduk='$id_produk'
-        ORDER BY a.Shift,c.NoMesin";
+        ORDER BY a.TglProduksi DESC, a.Shift";
 
         return $this->db->query($sql);
     }
+
+    function getPerShift($bulan="",$shift_src="",$produk_src="") {
+        $this->ShiftModel = new ShiftModel();
+
+        $builder = $this->db->table('tb_hasil_produksi a');
+        $builder->select("a.IdProduk, b.NamaProduk, a.Shift, SUM(a.QtyHasil) as total_qty");
+        $builder->join('tb_produk b', 'b.IdProduk = a.IdProduk', 'left');
+        $builder->where('MONTH(a.TglProduksi)', $bulan);
+        if($produk_src) {
+            $builder->where('a.IdProduk', $produk_src);
+        }
+        if($shift_src) {
+            $builder->where('a.IdShift', $shift_src);
+        }
+        $builder->groupBy("a.IdProduk, a.Shift, b.NamaProduk");
+        $builder->orderBy("b.NamaProduk");
+        $query = $builder->get()->getResultArray();
+        // echo '<pre>';
+        // print_r($query);
+        // die;
+
+        $dataShift = $this->ShiftModel->getResult();
+
+        // Initialize all rows for each product with 0s for all dates
+        $pivot = [];
+
+        foreach ($query as $row) {
+            $id_produk = $row['IdProduk'];
+            $produk    = $row['NamaProduk'];
+            $id_shift  = $row['Shift'];
+            $qty       = $row['total_qty'];
+
+            if (!isset($pivot[$produk])) {
+                $pivot[$produk]['Produk']   = $produk;
+                $pivot[$produk]['IdProduk'] = $id_produk;
+
+                foreach ($dataShift as $shift) {
+                    $pivot[$produk][$shift->IdShift] = 0.00;
+                }
+            }
+
+            $pivot[$produk][$id_shift] = $qty;
+        }
+
+        return $pivot;
+    }
+
+    function detailPerShift($bulan="",$id_shift="",$id_produk="") {
+        $sql = "SELECT a.IdProduksi,a.TglProduksi,a.Shift,a.IdMesin,a.QtyHasil,a.QtyWaste,b.NamaKaryawan,c.NoMesin,a.IdProduk
+        ,d.NamaProduk
+        FROM tb_hasil_produksi a
+        LEFT JOIN tb_karyawan b ON b.IdKaryawan=a.IdKaryawan
+        LEFT JOIN tb_mesin c ON c.IdMesin=a.IdMesin
+        LEFT JOIN tb_produk d ON d.IdProduk=a.IdProduk
+        WHERE MONTH(a.TglProduksi)=$bulan AND a.Shift=$id_shift AND A.IdProduk='$id_produk'
+        ORDER BY a.TglProduksi DESC,c.NoMesin";
+
+        return $this->db->query($sql);
+    }
+
+    function getPerOperator($tgl_src="",$tgl2_src="",$produk_src="",$id_pegawai="") {
+        $builder = $this->db->table('tb_hasil_produksi a');
+        $builder->select("a.IdProduk,a.IdKaryawan,b.NamaKaryawan,a.TglProduksi,SUM(a.QtyHasil) as total_qty");
+        $builder->join('tb_karyawan b', 'b.IdKaryawan = a.IdKaryawan', 'left');
+        $builder->where('a.TglProduksi >=', $tgl_src);
+        $builder->where('a.TglProduksi <=', $tgl2_src);
+
+        if($produk_src) {
+            $builder->where('a.IdProduk', $produk_src);
+        }
+
+        if($id_pegawai) {
+            $builder->where('a.IdKaryawan', $id_pegawai);
+        }
+
+        $builder->groupBy("a.IdProduk,a.IdKaryawan,b.NamaKaryawan,a.TglProduksi");
+        $builder->orderBy("a.TglProduksi");
+        $query = $builder->get()->getResultArray();
+
+        return $query;
+    }
+
 
 }

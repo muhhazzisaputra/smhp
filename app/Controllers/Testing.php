@@ -32,19 +32,27 @@ class Testing extends BaseController
     }
 
     public function index() {
-    	$builder = $this->db->table('tb_hasil_produksi a');
-        $builder->select("a.IdProduk, b.NamaProduk, a.IdMesin, c.NoMesin, SUM(a.QtyHasil) as total_qty");
+        $bulan = 5;
+        $this->ShiftModel = new ShiftModel();
+
+        $builder = $this->db->table('tb_hasil_produksi a');
+        $builder->select("a.IdProduk, b.NamaProduk, a.Shift, SUM(a.QtyHasil) as total_qty");
         $builder->join('tb_produk b', 'b.IdProduk = a.IdProduk', 'left');
-        $builder->join('tb_mesin c', 'c.IdMesin = a.IdMesin', 'left');
-        $builder->where('MONTH(a.TglProduksi)', '4');
-        $builder->groupBy("a.IdProduk, a.IdMesin, b.NamaProduk, c.NoMesin");
+        $builder->where('MONTH(a.TglProduksi)', $bulan);
+        // if($produk_src) {
+        //     $builder->where('a.IdProduk', $produk_src);
+        // }
+        // if($shift_src) {
+        //     $builder->where('a.IdShift', $shift_src);
+        // }
+        $builder->groupBy("a.IdProduk, a.Shift, b.NamaProduk");
         $builder->orderBy("b.NamaProduk");
         $query = $builder->get()->getResultArray();
         // echo '<pre>';
         // print_r($query);
         // die;
 
-        $dataMesin = $this->MesinModel->getResult();
+        $dataShift = $this->ShiftModel->getResult();
 
         // Initialize all rows for each product with 0s for all dates
         $pivot = [];
@@ -52,23 +60,24 @@ class Testing extends BaseController
         foreach ($query as $row) {
             $id_produk = $row['IdProduk'];
             $produk    = $row['NamaProduk'];
-            $id_mesin  = $row['IdMesin'];
-            $no_mesin  = $row['NoMesin'];
+            $id_shift  = $row['Shift'];
             $qty       = $row['total_qty'];
 
             if (!isset($pivot[$produk])) {
                 $pivot[$produk]['Produk']   = $produk;
                 $pivot[$produk]['IdProduk'] = $id_produk;
 
-                foreach ($dataMesin as $mesin) {
-                    $pivot[$produk][$mesin->IdMesin."_".$mesin->NoMesin] = 0.00;
+                foreach ($dataShift as $shift) {
+                    $pivot[$produk][$shift->IdShift] = 0.00;
                 }
             }
 
-            $pivot[$produk][$id_mesin."_".$no_mesin] = $qty;
-            echo '<pre>';
-	        print_r($pivot);
+            $pivot[$produk][$id_shift] = $qty;
         }
+
+        echo '<pre>';
+        print_r($pivot);
+        die;
     }
 
 }

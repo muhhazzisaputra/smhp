@@ -66,7 +66,7 @@
 		              			</tr>
 			              	</table>
 			            </form>
-			            <div id="view_data" class="table-responsive" style="height: 34vh;"></div>
+			            <div id="view_data" class="table-responsive" style="height: 68vh;"></div>
 	              	</div>
 	            </div>
 	        </div>

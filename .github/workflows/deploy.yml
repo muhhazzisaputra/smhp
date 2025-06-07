@@ -23,3 +23,21 @@ jobs:
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
           server-dir: /public_html/smhp/
+          exclude: |
+            **/.git*
+            **/app/Database/**
+            **/app/Filters/**
+            **/app/Helpers/**
+            **/app/Language/**
+            **/app/Libraries/**
+            **/app/ThirdParty/**
+            **/node_modules/**
+            **/public/**
+            **/tests/**
+            **/vendor/**
+            **/writable/**
+            **/README.md
+            **/composer.lock
+            **/package*.json
+            **/.env
+            **/.github/**

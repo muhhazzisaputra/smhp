@@ -15,46 +15,48 @@
                 <td><?php echo $row->NamaProduk ?></td>
             </tr>
         </table>
-        <table class="table table-sm table-bordered text-nowrap">
-            <thead>
-                <tr>
-                    <th class="bg-info color-palette" style="font-weight: normal; text-align: center;">No.</th>
-                    <th class="bg-info color-palette" style="font-weight: normal;">Id Produksi</th>
-                    <th class="bg-info color-palette" style="font-weight: normal; text-align: center;">Shift</th>
-                    <th class="bg-info color-palette" style="font-weight: normal;">No Mesin</th>
-                    <th class="bg-info color-palette" style="font-weight: normal;">Operator</th>
-                    <th class="bg-info color-palette" style="font-weight: normal; text-align: right;">Qty Hasil</th>
-                    <th class="bg-info color-palette" style="font-weight: normal; text-align: right;">Qty Waste</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                $no         = 0;
-                $totalQty   = 0;
-                $totalWaste = 0;
-                foreach($detail as $data) { 
-                    $no += 1; 
-                    $totalQty   += $data->QtyHasil;
-                    $totalWaste += $data->QtyWaste; ?>
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered text-nowrap">
+                <thead>
                     <tr>
-                        <td style="text-align: center;"><?php echo $no ?></td>
-                        <td><?php echo $data->IdProduksi ?></td>
-                        <td style="text-align: center;"><?php echo $data->Shift ?></td>
-                        <td><?php echo $data->NoMesin ?></td>
-                        <td><?php echo $data->NamaKaryawan ?></td>
-                        <td style="text-align: right;"><?php echo $data->QtyHasil ?></td>
-                        <td style="text-align: right;"><?php echo $data->QtyWaste ?></td>
+                        <th class="bg-info color-palette" style="font-weight: normal; text-align: center;">No.</th>
+                        <th class="bg-info color-palette" style="font-weight: normal;">Id Produksi</th>
+                        <th class="bg-info color-palette" style="font-weight: normal; text-align: center;">Shift</th>
+                        <th class="bg-info color-palette" style="font-weight: normal;">No Mesin</th>
+                        <th class="bg-info color-palette" style="font-weight: normal;">Operator</th>
+                        <th class="bg-info color-palette" style="font-weight: normal; text-align: right;">Qty Hasil</th>
+                        <th class="bg-info color-palette" style="font-weight: normal; text-align: right;">Qty Waste</th>
                     </tr>
-                <?php } ?>
-            </tbody>
-            <tfoot>
-                <tr style="font-weight: bold;">
-                    <td colspan="5" style="text-align: right;">Total</td>
-                    <td style="text-align: right;"><?php echo $totalQty ?></td>
-                    <td style="text-align: right;"><?php echo $totalWaste ?></td>
-                </tr>
-            </tfoot>
-        </table>
+                </thead>
+                <tbody>
+                    <?php
+                    $no         = 0;
+                    $totalQty   = 0;
+                    $totalWaste = 0;
+                    foreach($detail as $data) { 
+                        $no += 1; 
+                        $totalQty   += $data->QtyHasil;
+                        $totalWaste += $data->QtyWaste; ?>
+                        <tr>
+                            <td style="text-align: center;"><?php echo $no ?></td>
+                            <td><?php echo $data->IdProduksi ?></td>
+                            <td style="text-align: center;"><?php echo $data->Shift ?></td>
+                            <td><?php echo $data->NoMesin ?></td>
+                            <td><?php echo $data->NamaKaryawan ?></td>
+                            <td style="text-align: right;"><?php echo $data->QtyHasil ?></td>
+                            <td style="text-align: right;"><?php echo $data->QtyWaste ?></td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
+                <tfoot>
+                    <tr style="font-weight: bold;">
+                        <td colspan="5" style="text-align: right;">Total</td>
+                        <td style="text-align: right;"><?php echo $totalQty ?></td>
+                        <td style="text-align: right;"><?php echo $totalWaste ?></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
         <button type="submit" class="btn btn-sm btn-success">Export</button>
         <button type="button" class="btn btn-sm btn-danger" onclick="close_modal_lg()">Tutup</button>
     </form>

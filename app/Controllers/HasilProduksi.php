@@ -142,6 +142,11 @@ class HasilProduksi extends BaseController
         $builder->join('tb_karyawan f', 'f.IdKaryawan=a.UserEdit', 'left');
         // $builder->orderBy('a.TglProduksi desc', 'a.Shift asc', 'a.NoMesin asc');
 
+        $produk_src = strtolower($request->getPost('produk_src'));
+        if (!empty($produk_src)) {
+            $builder->like('a.IdProduk', $produk_src)->orLike('g.NamaProduk', $produk_src);
+        }
+
         $id_produksi_src = $request->getPost('id_produksi_src');
         if (!empty($id_produksi_src)) {
             $builder->like('a.IdProduksi', $id_produksi_src);
@@ -160,11 +165,6 @@ class HasilProduksi extends BaseController
         $operator_src = $request->getPost('operator_src');
         if (!empty($operator_src)) {
             $builder->where('a.IdKaryawan', $operator_src);
-        }
-
-        $produk_src = strtolower($request->getPost('produk_src'));
-        if (!empty($produk_src)) {
-            $builder->like('a.IdProduk', $produk_src)->orLike('g.NamaProduk', $produk_src);
         }
 
         $qty_hasil_src = $request->getPost('qty_hasil_src');

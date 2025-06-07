@@ -8,6 +8,7 @@
 <table class="table table-sm table-bordered table-head-fixed" style="margin-top: 4px; white-space: nowrap;">
     <thead>
         <tr>
+            <th rowspan="2" class="bg-info color-palette" style="font-weight: normal; vertical-align: top; text-align: center;">No.</th>
             <th rowspan="2" class="bg-info color-palette" style="font-weight: normal; vertical-align: top;">Produk</th>
             <th colspan="5" class="bg-info color-palette" style="font-weight: normal; text-align: center;">No Mesin</th>
             <th rowspan="2" class="bg-info color-palette" style="font-weight: normal; vertical-align: top; text-align: right;">Total</th>
@@ -19,8 +20,9 @@
         </tr>
     </thead>
     <tbody>
-        <?php foreach ($pivot as $produk => $row): ?>
+        <?php $no = 0; foreach ($pivot as $produk => $row): $no += 1; ?>
             <tr>
+                <td style="text-align: center;"><?php echo $no ?></td>
                 <td><?php echo esc($produk) ?></td>
                 <?php 
                 $rowTotal = 0; 
@@ -35,7 +37,7 @@
     </tbody>
     <tfoot>
         <tr>
-            <td style="text-align: right;">Total</td>
+            <td colspan="2" style="text-align: right;">Total</td>
             <?php
                 $colTotals = [];
                 $grandTotal = 0;

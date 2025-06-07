@@ -10,11 +10,11 @@
     <tr>
         <td>No.</td>
         <td>Id Produksi</td>
-        <td>Shift</td>
+        <td style="text-align: center;">Shift</td>
         <td>No Mesin</td>
         <td>Operator</td>
-        <td>Qty Hasil</td>
-        <td>Qty Waste</td>
+        <td style="text-align: right;">Qty Hasil</td>
+        <td style="text-align: right;">Qty Waste</td>
     </tr>
     <?php
     $no         = 0;
@@ -35,7 +35,7 @@
         </tr>
     <?php } ?>
     <tr>
-        <td colspan="5">Total</td>
+        <td colspan="5" style="text-align: right;">Total</td>
         <td><?php echo $totalQty ?></td>
         <td><?php echo $totalWaste ?></td>
     </tr>
