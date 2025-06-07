@@ -24,7 +24,6 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           server-dir: /public_html/smhp/
           port : ${{ secrets.FTP_PORT }}
-          passive: true
           exclude: |
             **/app/Database/**
             **/app/Filters/**
