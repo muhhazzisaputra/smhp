@@ -26,6 +26,8 @@ jobs:
           server-dir: /public_html/smhp/
           protocol: ftp
           passive: true
+          timeout: 60000
+          log-level: verbose
           exclude: |
             **/app/Database/**
             **/app/Filters/**
