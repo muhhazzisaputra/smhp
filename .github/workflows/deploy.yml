@@ -27,6 +27,8 @@ jobs:
           timeout: 60000
           log-level: verbose
           dry-run: false
+          dangerous-clean-slate: false
+          security: strict
           exclude: |
             **/app/Database/**
             **/app/Filters/**
