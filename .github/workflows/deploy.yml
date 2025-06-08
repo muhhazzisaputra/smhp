@@ -22,8 +22,8 @@ jobs:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
-          port : ${{ secrets.FTP_PORT }}
           server-dir: /public_html/smhp/
+          protocol: ftp
           port: 21
           timeout: 60000
           log-level: verbose
