@@ -26,6 +26,7 @@ jobs:
           server-dir: /public_html/smhp/
           timeout: 60000
           log-level: verbose
+          dry-run: false
           exclude: |
             **/app/Database/**
             **/app/Filters/**
