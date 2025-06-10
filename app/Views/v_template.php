@@ -272,7 +272,7 @@
             iziToast.success({
                 title   : 'Success!',
                 message : pesan,
-                position: 'topLeft'
+                position: 'topRight'
             });
         }
 
@@ -280,7 +280,7 @@
             iziToast.error({
                 title   : 'Error!',
                 message : pesan,
-                position: 'topLeft'
+                position: 'topRight'
             });
         }
 
@@ -288,7 +288,7 @@
             iziToast.warning({
                 title   : 'Warning!',
                 message : pesan,
-                position: 'topLeft'
+                position: 'topRight'
             });
         }
 
@@ -296,7 +296,7 @@
             iziToast.info({
                 title   : 'Info!',
                 message : pesan,
-                position: 'topLeft'
+                position: 'topRight'
             });
         }
 

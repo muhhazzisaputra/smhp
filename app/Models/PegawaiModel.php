@@ -44,4 +44,11 @@ class PegawaiModel extends Model
         return $result;
     }
 
+    public function getNama($id_karyawan) {
+        $sql = "SELECT NamaKaryawan FROM tb_karyawan WHERE IdKaryawan IN($id_karyawan)
+            ORDER BY FIELD(IdKaryawan,$id_karyawan)";
+
+        return $this->db->query($sql);
+    }
+
 }

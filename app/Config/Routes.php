@@ -69,3 +69,5 @@ $routes->post('laporan_hasil_produksi/view_data/(:any)', 'LaporanProduksi::view_
 $routes->post('laporan_hasil_produksi/detail_hasil_pertgl/?(:any)', 'LaporanProduksi::detail_hasil_pertgl/$1');
 $routes->post('laporan_hasil_produksi/detail_hasil_permesin/?(:any)', 'LaporanProduksi::detail_hasil_permesin/$1');
 $routes->post('laporan_hasil_produksi/detail_hasil_pershift/?(:any)', 'LaporanProduksi::detail_hasil_pershift/$1');
+$routes->post('laporan_hasil_produksi/detail_hasil_peroperator/?(:any)', 'LaporanProduksi::detail_hasil_peroperator/$1');
+$routes->post('laporan_hasil_produksi/detail_hasil_perproduk/?(:any)', 'LaporanProduksi::detail_hasil_perproduk/$1');

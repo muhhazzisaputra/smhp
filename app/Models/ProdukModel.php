@@ -35,4 +35,11 @@ class ProdukModel extends Model
         return $result;
     }
 
+    public function getNama($id_produk) {
+        $sql = "SELECT NamaProduk FROM tb_produk WHERE IdProduk IN($id_produk)
+            ORDER BY FIELD(IdProduk,$id_produk)";
+
+        return $this->db->query($sql);
+    }
+
 }

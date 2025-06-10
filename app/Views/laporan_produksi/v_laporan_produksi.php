@@ -54,13 +54,14 @@
 		              				<td style="width: 125px;">Format Laporan</td>
 		              				<td style="width: 13px;">:</td>
 		              				<td style="width: 100px;">
-		              					<select class="form-control" name="format" id="format" style="width: 200px;" onchange="pilih_format(this)">
+		              					<select class="form-control" name="format" id="format" style="width: 275px;" onchange="pilih_format(this)">
 		              						<option value="">-Pilih-</option>
 		              						<option value="per_tgl">1. Produksi Per Tanggal</option>
 		              						<option value="per_shift">2. Produksi Per Shift</option>
 		              						<option value="per_mesin">3. Produksi Per Mesin</option>
 		              						<option value="per_operator">4. Produksi Per Operator</option>
-		              						<option value="tidak_mencapai_target">5. Produksi Tidak Mencapai Target</option>
+		              						<option value="per_produk">5. Produksi Per Produk</option>
+		              						<option value="tidak_mencapai_target">6. Produksi Tidak Mencapai Target</option>
 		              					</select>
 		              				</td>
 		              			</tr>

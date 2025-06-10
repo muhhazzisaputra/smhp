@@ -238,5 +238,39 @@ class HasilProduksiModel extends Model
         return $query;
     }
 
+    function detailPerOperator($tgl_produksi="",$id_operator="") {
+        $sql = "SELECT a.IdProduksi,a.TglProduksi,a.Shift,b.NoMesin,c.NamaKaryawan,d.NamaProduk,a.QtyHasil,a.QtyWaste
+            FROM tb_hasil_produksi a
+            LEFT JOIN tb_mesin b ON b.IdMesin=a.IdMesin
+            LEFT JOIN tb_karyawan c ON c.IdKaryawan=a.IdKaryawan
+            LEFT JOIN tb_produk d ON d.IdProduk=a.IdProduk
+            WHERE a.TglProduksi='$tgl_produksi' AND a.IdKaryawan='$id_operator'";
+
+        return $this->db->query($sql);    
+    }
+
+    function getPerProduk($periode,$tgl_src,$tgl2_src,$produk_src="") {
+        if($periode=="tanggal") {
+            $builder = $this->db->table('tb_hasil_produksi a');
+            $builder->select("a.IdProduk,a.TglProduksi,SUM(a.QtyHasil) as total_qty");
+            $builder->join('tb_karyawan b', 'b.IdKaryawan = a.IdKaryawan', 'left');
+            $builder->where('a.TglProduksi >=', $tgl_src);
+            $builder->where('a.TglProduksi <=', $tgl2_src);
+
+            if($produk_src) {
+                $builder->where('a.IdProduk', $produk_src);
+            }
+
+            $builder->groupBy("a.IdProduk,a.TglProduksi");
+            $builder->orderBy("a.TglProduksi");
+            $query = $builder->get()->getResultArray();
+        } else if($periode=="minggu") {
+            $query = [];
+        } else if($periode=="bulan") {
+            $query = [];
+        }
+
+        return $query;
+    }
 
 }

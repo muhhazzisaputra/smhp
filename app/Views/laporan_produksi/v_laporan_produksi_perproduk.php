@@ -10,12 +10,12 @@
         <tr>
             <th rowspan="2" class="bg-info color-palette" style="font-weight: normal; text-align: center; width: 50px; vertical-align: top;">No.</th>
             <th rowspan="2" class="bg-info color-palette" style="font-weight: normal; vertical-align: top;">Tgl Produksi</th>
-            <th colspan="<?php echo count($karyawan) ?>" class="bg-info color-palette" style="font-weight: normal; text-align: center;">Operator</th>
+            <th colspan="<?php echo count($produk) ?>" class="bg-info color-palette" style="font-weight: normal; text-align: center;">Produk</th>
             <th rowspan="2" class="bg-info color-palette" style="font-weight: normal; text-align: right; vertical-align: top;">Total</th>
         </tr>
         <tr>
             <?php foreach ($nama as $nm) : ?>
-                <th class="bg-info color-palette" style="font-weight: normal; text-align: right;"><?php echo $nm->NamaKaryawan ?></th>
+                <th class="bg-info color-palette" style="font-weight: normal; text-align: right;"><?php echo $nm->NamaProduk ?></th>
             <?php endforeach; ?>
         </tr>
     </thead>
@@ -26,10 +26,10 @@
                 <td><?php echo date('d-M-Y', strtotime($tanggal)) ?></td>
                 <?php 
                 $rowTotal = 0; 
-                foreach ($karyawan as $kry) :
-                    $val = $row[$kry] ?? 0; 
+                foreach ($produk as $prd) :
+                    $val = $row[$prd] ?? 0; 
                     $rowTotal += $val; ?>
-                    <td style="text-align: right;"><span  style="color: blue; cursor: pointer;" onclick="detail_hasil('<?php echo $tanggal ?>', '<?php echo $kry ?>');"><?php echo ($row[$kry] > 0) ? number_format($row[$kry], 2) : '' ?></span></td>
+                    <td style="text-align: right;"><span  style="color: blue; cursor: pointer;" onclick="detail_hasil('<?php echo $tanggal ?>', '<?php echo $prd ?>');"><?php echo ($row[$prd] > 0) ? number_format($row[$prd], 2) : '' ?></span></td>
                 <?php endforeach; ?>
                 <td style="text-align: right;"><?php echo number_format($rowTotal, 2) ?></td>
             </tr>
