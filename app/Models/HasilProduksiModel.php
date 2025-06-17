@@ -273,4 +273,15 @@ class HasilProduksiModel extends Model
         return $query;
     }
 
+    function detailPerProduk($tgl_produksi,$id_produk) {
+        $sql = "SELECT a.IdProduksi,a.TglProduksi,a.IdProduk,a.Shift,b.NoMesin,c.NamaKaryawan,d.NamaProduk,a.QtyHasil,a.QtyWaste
+            FROM tb_hasil_produksi a
+            LEFT JOIN tb_mesin b ON b.IdMesin=a.IdMesin
+            LEFT JOIN tb_karyawan c ON c.IdKaryawan=a.IdKaryawan
+            LEFT JOIN tb_produk d ON d.IdProduk=a.IdProduk
+            WHERE a.TglProduksi='$tgl_produksi' AND a.IdProduk='$id_produk'";
+
+        return $this->db->query($sql);
+    }
+
 }

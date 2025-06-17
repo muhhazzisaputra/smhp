@@ -615,4 +615,14 @@ class LaporanProduksi extends BaseController
         return view('laporan_produksi/v_laporan_produksi_perproduk', $data);
     }
 
+    public function detail_hasil_perproduk($xls="") {
+        $tgl_produksi = $this->request->getPost('tgl_produksi');
+        $id_produk    = $this->request->getPost('id_produk');
+
+        $data['row']    = $this->HasilProduksiModel->detailPerProduk($tgl_produksi,$id_produk)->getRow();
+        $data['detail'] = $this->HasilProduksiModel->detailPerProduk($tgl_produksi,$id_produk)->getResult();
+
+        return view('laporan_produksi/v_laporan_produksi_perproduk_detail', $data);
+    }
+
 }

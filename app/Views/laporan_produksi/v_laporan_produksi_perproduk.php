@@ -38,8 +38,8 @@
 </table>
 
 <script type="text/javascript">
-    function detail_hasil(tgl_produksi, id_operator) {
-        $.post('<?php echo base_url() ?>laporan_hasil_produksi/detail_hasil_peroperator', {tgl_produksi, id_operator}, function(data) {
+    function detail_hasil(tgl_produksi, id_produk) {
+        $.post('<?php echo base_url() ?>laporan_hasil_produksi/detail_hasil_perproduk', {tgl_produksi, id_produk}, function(data) {
             $('#modal_body_lg').html(data);
             $('#modal-lg').modal('show');
         });

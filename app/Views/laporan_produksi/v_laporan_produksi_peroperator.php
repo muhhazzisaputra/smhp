@@ -35,6 +35,31 @@
             </tr>
         <?php endforeach; ?>
     </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="2" style="text-align: right;">Total</td>
+            <?php
+                $colTotals = [];
+                $grandTotal = 0;
+
+                foreach ($karyawan as $kry) {
+                    $colTotals[$kry] = 0;
+                }
+
+                foreach ($pivot as $row) {
+                    foreach ($karyawan as $kry) {
+                        $colTotals[$kry] += $row[$kry] ?? 0;
+                    }
+                }
+
+                foreach ($karyawan as $kry) {
+                    echo '<td style="text-align: right;">' . number_format($colTotals[$kry], 2) . '</td>';
+                    $grandTotal += $colTotals[$kry];
+                }
+            ?>
+            <td style="text-align: right;"><?php echo number_format($grandTotal, 2) ?></td>
+        </tr>
+    </tfoot>
 </table>
 
 <script type="text/javascript">
