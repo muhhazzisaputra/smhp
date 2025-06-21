@@ -70,4 +70,7 @@ $routes->post('laporan_hasil_produksi/detail_hasil_pertgl/?(:any)', 'LaporanProd
 $routes->post('laporan_hasil_produksi/detail_hasil_permesin/?(:any)', 'LaporanProduksi::detail_hasil_permesin/$1');
 $routes->post('laporan_hasil_produksi/detail_hasil_pershift/?(:any)', 'LaporanProduksi::detail_hasil_pershift/$1');
 $routes->post('laporan_hasil_produksi/detail_hasil_peroperator/?(:any)', 'LaporanProduksi::detail_hasil_peroperator/$1');
-$routes->post('laporan_hasil_produksi/detail_hasil_perproduk/?(:any)', 'LaporanProduksi::detail_hasil_perproduk/$1');
+$routes->post('laporan_hasil_produksi/detail_hasil_perproduk_tanggal/?(:any)', 'LaporanProduksi::detail_hasil_perproduk_tanggal/$1');
+$routes->post('laporan_hasil_produksi/detail_hasil_perproduk_minggu/?(:any)', 'LaporanProduksi::detail_hasil_perproduk_minggu/$1');
+$routes->post('laporan_hasil_produksi/detail_hasil_perproduk_bulan/?(:any)', 'LaporanProduksi::detail_hasil_perproduk_bulan/$1');
+$routes->post('laporan_hasil_produksi/detail_hasil_perproduk_bulan/?(:any)', 'LaporanProduksi::detail_hasil_perproduk_bulan/$1');

@@ -264,24 +264,117 @@ class HasilProduksiModel extends Model
             $builder->groupBy("a.IdProduk,a.TglProduksi");
             $builder->orderBy("a.TglProduksi");
             $query = $builder->get()->getResultArray();
-        } else if($periode=="minggu") {
-            $query = [];
-        } else if($periode=="bulan") {
-            $query = [];
-        }
 
-        return $query;
+            return $query;
+        } else if($periode=="minggu") {
+            $produkResult = $this->db->table('tb_hasil_produksi a')
+                            ->select("a.IdProduk")
+                            ->where("a.TglProduksi >=", $tgl_src)
+                            ->where("a.TglProduksi <=", $tgl2_src)
+                            ->groupBy("a.IdProduk")
+                            ->orderBy("a.IdProduk")
+                            ->get()
+                            ->getResultArray();
+
+            $produkList  = array_column($produkResult, 'IdProduk');
+            $periodeExpr = "CONCAT(YEAR(a.TglProduksi), '-W', LPAD(WEEK(a.TglProduksi, 1), 2, '0'))";
+
+            $select = "$periodeExpr AS Periode";
+            foreach ($produkList as $produk) {
+                $select .= ", SUM(CASE WHEN a.IdProduk = '$produk' THEN a.QtyHasil ELSE 0 END) AS `$produk`";
+            }
+            $select .= ", SUM(a.QtyHasil) AS Total";
+
+            $where = "";
+            if ($tgl_src && $tgl2_src) {
+                $where = "WHERE a.TglProduksi BETWEEN '$tgl_src' AND '$tgl2_src'";
+            }
+
+            $sql = "
+                SELECT $select
+                FROM tb_hasil_produksi a
+                $where
+                GROUP BY Periode
+                ORDER BY Periode
+            ";
+
+            $query = ['sql' => $sql, 'produkList' => $produkList];
+
+            return $query;
+        } else if($periode=="bulan") {
+            $produkResult = $this->db->table($this->table)->distinct()->select('IdProduk')->orderBy('IdProduk')->get()->getResultArray();
+
+            $produkList = array_column($produkResult, 'IdProduk');
+
+            // Build select clause
+            $select = "DATE_FORMAT(TglProduksi, '%Y-%m') AS Bulan";
+            foreach ($produkList as $produk) {
+                $select .= ", SUM(CASE WHEN IdProduk = '$produk' THEN QtyHasil ELSE 0 END) AS `$produk`";
+            }
+            $select .= ", SUM(QtyHasil) AS Total";
+
+            // WHERE clause
+            $where = '';
+            if ($tgl_src && $tgl2_src) {
+                $tgl_src  = substr($tgl_src,0,7);
+                $tgl2_src = substr($tgl2_src,0,7);
+                $where = "WHERE LEFT(TglProduksi, 7) BETWEEN '$tgl_src' AND '$tgl2_src'";
+            }
+
+            // Build final query
+            $sql = "
+                SELECT $select
+                FROM {$this->table}
+                $where
+                GROUP BY Bulan
+                ORDER BY Bulan ASC
+            ";
+
+            $query = ['sql' => $sql, 'produkList' => $produkList];
+
+            return $query;
+        }
     }
 
-    function detailPerProduk($tgl_produksi,$id_produk) {
+    function detailPerProduk($tgl="",$tgl2="",$id_produk,$periode) {
+        $whereTgl = "";
+        if($periode=="tanggal") {
+            $whereTgl = "a.TglProduksi='$tgl'";
+        } else if($periode=="minggu") {
+            $whereTgl = "a.TglProduksi BETWEEN '$tgl' AND '$tgl2'";
+        } else if($periode=="bulan") {
+            $tgl      = substr($tgl,0,7);
+            $whereTgl = "LEFT(a.TglProduksi, 7)='$tgl'";
+        }
+
         $sql = "SELECT a.IdProduksi,a.TglProduksi,a.IdProduk,a.Shift,b.NoMesin,c.NamaKaryawan,d.NamaProduk,a.QtyHasil,a.QtyWaste
             FROM tb_hasil_produksi a
             LEFT JOIN tb_mesin b ON b.IdMesin=a.IdMesin
             LEFT JOIN tb_karyawan c ON c.IdKaryawan=a.IdKaryawan
             LEFT JOIN tb_produk d ON d.IdProduk=a.IdProduk
-            WHERE a.TglProduksi='$tgl_produksi' AND a.IdProduk='$id_produk'";
+            WHERE $whereTgl AND a.IdProduk='$id_produk'
+            ORDER BY a.TglProduksi,a.Shift";
 
         return $this->db->query($sql);
+    }
+
+    function getNoTarget($bulan,$produk_src="") {
+        $bulan = substr($bulan,0,7);
+
+        $builder = $this->db->table('tb_hasil_produksi a');
+        $builder->select("a.IdProduksi,a.TglProduksi,a.IdProduk,a.Shift,b.NoMesin,c.NamaKaryawan,d.NamaProduk,a.QtyHasil,a.QtyWaste");
+        $builder->join("tb_mesin b", "b.IdMesin=a.IdMesin", "left");
+        $builder->join("tb_karyawan c", "c.IdKaryawan=a.IdKaryawan", "left");
+        $builder->join("tb_produk d", "d.IdProduk=a.IdProduk", "left");
+        $builder->where("LEFT(a.TglProduksi, 7)", $bulan);
+        $builder->where("a.QtyHasil <", 30);
+        if($produk_src) {
+            $builder->where('a.IdProduk', $produk_src);
+        }
+        $builder->orderBy("a.TglProduksi DESC, a.Shift ASC");
+        $query = $builder->get()->getResult();
+
+        return $query;
     }
 
 }

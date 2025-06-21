@@ -134,8 +134,9 @@
 			</td>
 			<td hidden class="td_bulan" style="width: 65px;">&nbsp;&nbsp;&nbsp;Bulan</td>
 			<td hidden class="td_bulan" style="width: 13px;">:</td>
-			<td hidden class="td_bulan" style="">
-				<input type="text" name="bulan_src" id="bulan_src" value="<?php echo date('Y-m-01') ?>" class="form-control monthclass" style="width: 100px; background-color: white; display: inline;" readonly>
+			<td hidden class="td_bulan2" style="">
+				<input type="text" name="bulan_src" id="bulan_src" value="<?php echo date('Y-m-01') ?>" class="form-control monthclass" style="width: 100px; background-color: white; display: inline;" readonly> - 
+				<input type="text" name="bulan2_src" id="bulan2_src" value="<?php echo date('Y-m-01') ?>" class="form-control monthclass" style="width: 100px; background-color: white; display: inline;" readonly>
 			</td>
 			<td>
 				&nbsp;&nbsp;&nbsp;<button type="button" class="btn btn-sm btn-primary" id="searchBtn" title="Cari" onclick="view_data(this)"><i class="fas fa-search"></i></button>
@@ -159,6 +160,25 @@
 	<table style="white-space: nowrap;">
 		<tr>
 			<?php echo $opt_format ?>
+			<td style="width: 65px;">&nbsp;&nbsp;&nbsp;Bulan</td>
+			<td style="width: 13px;">:</td>
+			<td style="">
+				<input type="text" name="bulan_src" id="bulan_src" value="<?php echo date('Y-m-01') ?>" class="form-control monthclass" style="width: 100px; background-color: white; display: inline;" readonly>
+			</td>
+			<td style="width: 75px;">&nbsp;&nbsp;&nbsp;Produk</td>
+			<td style="width: 13px;">:</td>
+			<td style="">
+				<select class="form-control" type="produk_src" name="produk_src" style="width: 175px;">
+					<option value="">-Pilih-</option>
+	                <?php foreach($produk as $prd) { ?>
+	                    <option value="<?php echo $prd->IdProduk ?>"><?php echo $prd->NamaProduk ?></option>
+	                <?php } ?>
+               	</select>
+			</td>
+			<td>
+				&nbsp;&nbsp;&nbsp;<button type="button" class="btn btn-sm btn-primary" id="searchBtn" title="Cari" onclick="view_data(this)"><i class="fas fa-search"></i></button>
+				<button type="submit" class="btn btn-sm btn-success" title="Export Xls"><i class="fas fa-file-excel"></i></button>
+			</td>
 		</tr>
 	</table>
 <?php } ?>
@@ -195,9 +215,11 @@
 
 		if( (periode=="tanggal") || (periode=="minggu") ) {
 			$('.td_bulan').prop('hidden', true);
+			$('.td_bulan2').prop('hidden', true);
 			$('.td_tanggal').prop('hidden', false);
 		} else {
-			$('.td_bulan').prop('hidden', false);
+			$('.td_bulan').prop('hidden', true);
+			$('.td_bulan2').prop('hidden', false);
 			$('.td_tanggal').prop('hidden', true);
 		}
 	}

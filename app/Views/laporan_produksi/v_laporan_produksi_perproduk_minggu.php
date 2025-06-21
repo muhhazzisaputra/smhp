@@ -9,7 +9,7 @@
     <thead>
         <tr>
             <th rowspan="2" class="bg-info color-palette" style="font-weight: normal; text-align: center; width: 50px; vertical-align: top;">No.</th>
-            <th rowspan="2" class="bg-info color-palette" style="font-weight: normal; vertical-align: top;">Tgl Produksi</th>
+            <th rowspan="2" class="bg-info color-palette" style="font-weight: normal; vertical-align: top;">Tahun -<br>Minggu Ke</th>
             <th colspan="<?php echo count($produk) ?>" class="bg-info color-palette" style="font-weight: normal; text-align: center;">Produk</th>
             <th rowspan="2" class="bg-info color-palette" style="font-weight: normal; text-align: right; vertical-align: top;">Total</th>
         </tr>
@@ -23,13 +23,13 @@
         <?php $no = 0; foreach ($pivot as $tanggal => $row) : $no += 1; ?>
             <tr>
                 <td style="text-align: center;"><?php echo $no ?></td>
-                <td><?php echo date('d-M-Y', strtotime($tanggal)) ?></td>
+                <td><?php echo $row['Periode'] ?></td>
                 <?php 
                 $rowTotal = 0; 
                 foreach ($produk as $prd) :
                     $val = $row[$prd] ?? 0; 
                     $rowTotal += $val; ?>
-                    <td style="text-align: right;"><span  style="color: blue; cursor: pointer;" onclick="detail_hasil('<?php echo $tanggal ?>', '<?php echo $prd ?>');"><?php echo ($row[$prd] > 0) ? number_format($row[$prd], 2) : '' ?></span></td>
+                    <td style="text-align: right;"><span  style="color: blue; cursor: pointer;" onclick="detail_hasil_minggu('<?php echo $row['Periode'] ?>', '<?php echo $prd ?>');"><?php echo ($row[$prd] > 0) ? number_format($row[$prd], 2) : '' ?></span></td>
                 <?php endforeach; ?>
                 <td style="text-align: right;"><?php echo number_format($rowTotal, 2) ?></td>
             </tr>
@@ -63,8 +63,8 @@
 </table>
 
 <script type="text/javascript">
-    function detail_hasil(tgl_produksi, id_produk) {
-        $.post('<?php echo base_url() ?>laporan_hasil_produksi/detail_hasil_perproduk_tanggal', {tgl_produksi, id_produk}, function(data) {
+    function detail_hasil_minggu(minggu_ke, id_produk) {
+        $.post('<?php echo base_url() ?>laporan_hasil_produksi/detail_hasil_perproduk_minggu', {minggu_ke, id_produk}, function(data) {
             $('#modal_body_lg').html(data);
             $('#modal-lg').modal('show');
         });

@@ -90,7 +90,17 @@ class LaporanProduksi extends BaseController
         } else if($format=="per_operator") {
             return $this->produksi_per_operator($xls);
         } else if($format=="per_produk") {
-            return $this->produksi_per_produk($xls);
+            $periode = $this->request->getPost('periode');
+
+            if($periode=="tanggal") {
+                return $this->produksi_per_produk($xls);
+            } else if($periode=="minggu") {
+                return $this->produksi_per_produk_minggu($xls);
+            } else if($periode=="bulan") {
+                return $this->produksi_per_produk_bulan($xls);
+            }
+        } else if($format=="tidak_mencapai_target") {
+            return $this->tidak_mencapai_target($xls);
         }
     }
 
@@ -615,14 +625,105 @@ class LaporanProduksi extends BaseController
         return view('laporan_produksi/v_laporan_produksi_perproduk', $data);
     }
 
-    public function detail_hasil_perproduk($xls="") {
+    public function detail_hasil_perproduk_tanggal($xls="") {
         $tgl_produksi = $this->request->getPost('tgl_produksi');
         $id_produk    = $this->request->getPost('id_produk');
 
-        $data['row']    = $this->HasilProduksiModel->detailPerProduk($tgl_produksi,$id_produk)->getRow();
-        $data['detail'] = $this->HasilProduksiModel->detailPerProduk($tgl_produksi,$id_produk)->getResult();
+        $data['row']    = $this->HasilProduksiModel->detailPerProduk($tgl_produksi,"",$id_produk,'tanggal')->getRow();
+        $data['detail'] = $this->HasilProduksiModel->detailPerProduk($tgl_produksi,"",$id_produk,'tanggal')->getResult();
 
         return view('laporan_produksi/v_laporan_produksi_perproduk_detail', $data);
+    }
+
+    public function produksi_per_produk_minggu($xls="") {
+        $periode    = $this->request->getPost('periode');
+        $tgl_src    = $this->request->getPost('tgl_src');
+        $tgl2_src   = $this->request->getPost('tgl2_src');
+        $produk_src = $this->request->getPost('produk_src');
+
+        $produksiModel = $this->HasilProduksiModel->getPerProduk($periode,$tgl_src,$tgl2_src,$produk_src="");
+
+        $produkIn = [];
+        foreach ($produksiModel['produkList'] as $val) :
+            $produkIn[] = "'".$val."'";
+        endforeach;
+        $produkImplode = implode(",", $produkIn);
+
+        $data['pivot']  = $this->db->query($produksiModel['sql'])->getResultArray();
+        $data['produk'] = $produksiModel['produkList'];
+        $data['nama']   = $this->ProdukModel->getNama($produkImplode)->getResult();
+
+        return view('laporan_produksi/v_laporan_produksi_perproduk_minggu', $data);
+    }
+
+    public function detail_hasil_perproduk_minggu($xls="") {
+        $minggu_ke = $this->request->getPost('minggu_ke');
+        $id_produk = $this->request->getPost('id_produk');
+
+        if (!preg_match('/^(\d{4})-W(\d{2})$/', $minggu_ke, $matches)) {
+            return false; // Invalid format
+        }
+
+        $year = (int) $matches[1];
+        $week = (int) $matches[2];
+
+        // Monday of the ISO week
+        $start = new \DateTime();
+        $start->setISODate($year, $week);
+        $startDate = $start->format('Y-m-d');
+
+        // Sunday (add 6 days)
+        $end = clone $start;
+        $end->modify('+6 days');
+        $endDate = $end->format('Y-m-d');
+
+        $data['dari_tgl'] = $startDate;
+        $data['ke_tgl']   = $endDate;
+
+        $data['row']    = $this->HasilProduksiModel->detailPerProduk($startDate,$endDate,$id_produk,'minggu')->getRow();
+        $data['detail'] = $this->HasilProduksiModel->detailPerProduk($startDate,$endDate,$id_produk,'minggu')->getResult();
+
+        return view('laporan_produksi/v_laporan_produksi_perproduk_detail_minggu', $data);
+    }
+
+    public function produksi_per_produk_bulan($xls="") {
+        $periode    = $this->request->getPost('periode');
+        $bulan_src  = $this->request->getPost('bulan_src');
+        $bulan2_src = $this->request->getPost('bulan2_src');
+        $produk_src = $this->request->getPost('produk_src');
+
+        $produksiModel = $this->HasilProduksiModel->getPerProduk($periode,$bulan_src,$bulan2_src,$produk_src="");
+        
+        $produkIn = [];
+        foreach ($produksiModel['produkList'] as $val) :
+            $produkIn[] = "'".$val."'";
+        endforeach;
+        $produkImplode = implode(",", $produkIn);
+
+        $data['pivot']  = $this->db->query($produksiModel['sql'])->getResultArray();
+        $data['produk'] = $produksiModel['produkList'];
+        $data['nama']   = $this->ProdukModel->getNama($produkImplode)->getResult();
+
+        return view('laporan_produksi/v_laporan_produksi_perproduk_bulan', $data);
+    }
+
+    public function detail_hasil_perproduk_bulan($xls="") {
+        $bulan     = $this->request->getPost('bulan');
+        $id_produk = $this->request->getPost('id_produk');
+
+        $data['row']    = $this->HasilProduksiModel->detailPerProduk($bulan,"",$id_produk,'bulan')->getRow();
+        $data['detail'] = $this->HasilProduksiModel->detailPerProduk($bulan,"",$id_produk,'bulan')->getResult();
+
+        return view('laporan_produksi/v_laporan_produksi_perproduk_detail_bulan', $data);
+    }
+
+    public function tidak_mencapai_target($xls="") {
+        $bulan_src  = $this->request->getPost('bulan_src');
+        $produk_src = $this->request->getPost('produk_src');
+
+        $data['hasilProduksi'] = $this->HasilProduksiModel->getNoTarget($bulan_src,$produk_src);
+
+        return view('laporan_produksi/v_produksi_tidak_mencapai_target', $data);
     }
 
 }
