@@ -1,114 +1,179 @@
 <?php echo $this->extend('v_template'); ?>
 
 <?php echo $this->section('content'); ?>
-<!-- Content Header (Page header) -->
-<div class="content-header">
-    <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1 class="m-0">Dashboard v3</h1>
-            </div><!-- /.col -->
-            <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Dashboard v3</li>
-            </ol>
-          </div><!-- /.col -->
-        </div><!-- /.row -->
-    </div><!-- /.container-fluid -->
-</div>
-<!-- /.content-header -->
+<section class="content-header" style="padding-top: 1px;">
+  <div class="container-fluid"></div>
+</section>
 
 <!-- Main content -->
-<div class="content">
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-lg-6">
-        <div class="card">
-          <div class="card-header border-0">
-            <div class="d-flex justify-content-between">
-              <h3 class="card-title">Online Store Visitors</h3>
-              <a href="javascript:void(0);">View Report</a>
+<section class="content">
+    <div class="container-fluid">
+      <div class="row">
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box">
+              <span class="info-box-icon bg-primary elevation-1"><i class="fas fa-clipboard-check"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Total Hasil(Kg)</span>
+                <span class="info-box-number"><?php echo number_format($total_hasil) ?></span>
+              </div>
+              <!-- /.info-box-content -->
             </div>
+            <!-- /.info-box -->
           </div>
-          <div class="card-body">
-            <div class="d-flex">
-              <p class="d-flex flex-column">
-                <span class="text-bold text-lg">820</span>
-                <span>Visitors Over Time</span>
-              </p>
-              <p class="ml-auto d-flex flex-column text-right">
-                <span class="text-success">
-                  <i class="fas fa-arrow-up"></i> 12.5%
-                </span>
-                <span class="text-muted">Since last week</span>
-              </p>
-            </div>
-            <!-- /.d-flex -->
+          <!-- /.col -->
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-primary elevation-1"><i class="fas fa-trash-alt"></i></span>
 
-            <div class="position-relative mb-4">
-              <canvas id="visitors-chart" height="200"></canvas>
+              <div class="info-box-content">
+                <span class="info-box-text">Total Waste(Kg)</span>
+                <span class="info-box-number"><?php echo $total_waste ?></span>
+              </div>
+              <!-- /.info-box-content -->
             </div>
-
-            <div class="d-flex flex-row justify-content-end">
-              <span class="mr-2">
-                <i class="fas fa-square text-primary"></i> This Week
-              </span>
-
-              <span>
-                <i class="fas fa-square text-gray"></i> Last Week
-              </span>
-            </div>
+            <!-- /.info-box -->
           </div>
+          <!-- /.col -->
+
+          <!-- fix for small devices only -->
+          <div class="clearfix hidden-md-up"></div>
+
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-primary elevation-1"><i class="fas fa-archive"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Total Produk</span>
+                <span class="info-box-number"><?php echo $total_produk ?></span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-primary elevation-1"><i class="fas fa-users"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Total Operator</span>
+                <span class="info-box-number"><?php echo $total_operator ?></span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
         </div>
-        <!-- /.card -->
-      </div>
-      <!-- /.col-md-6 -->
-      <div class="col-lg-6">
-        <div class="card">
-          <div class="card-header border-0">
-            <div class="d-flex justify-content-between">
-              <h3 class="card-title">Sales</h3>
-              <a href="javascript:void(0);">View Report</a>
+        <div class="row">
+            <!-- BAR CHART -->
+            <div class="col-12 col-sm-12 col-md-6">
+                <div class="card card-primary">
+                  <div class="card-header">
+                    <h3 class="card-title">Grafik Total Qty Hasil 2025</h3>
+                  </div>
+                  <div class="card-body">
+                    <div class="chart">
+                      <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                    </div>
+                  </div>
+                  <!-- /.card-body -->
+                </div>
             </div>
-          </div>
-          <div class="card-body">
-            <div class="d-flex">
-              <p class="d-flex flex-column">
-                <span class="text-bold text-lg">$18,230.00</span>
-                <span>Sales Over Time</span>
-              </p>
-              <p class="ml-auto d-flex flex-column text-right">
-                <span class="text-success">
-                  <i class="fas fa-arrow-up"></i> 33.1%
-                </span>
-                <span class="text-muted">Since last month</span>
-              </p>
+            <!-- BAR CHART -->
+            <div class="col-12 col-sm-12 col-md-6">
+                <div class="card card-primary">
+                  <div class="card-header">
+                    <h3 class="card-title">Grafik Total Qty Waste 2025</h3>
+                  </div>
+                  <div class="card-body">
+                    <div class="chart2">
+                      <canvas id="barChart2" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                    </div>
+                  </div>
+                  <!-- /.card-body -->
+                </div>
             </div>
-            <!-- /.d-flex -->
-
-            <div class="position-relative mb-4">
-              <canvas id="sales-chart" height="200"></canvas>
-            </div>
-
-            <div class="d-flex flex-row justify-content-end">
-              <span class="mr-2">
-                <i class="fas fa-square text-primary"></i> This year
-              </span>
-
-              <span>
-                <i class="fas fa-square text-gray"></i> Last year
-              </span>
-            </div>
-          </div>
         </div>
-        <!-- /.card -->
-      </div>
-      <!-- /.col-md-6 -->
     </div>
-    <!-- /.row -->
-  </div>
-  <!-- /.container-fluid -->
-</div>
-<!-- /.content -->
+</section>
+
+<!-- ChartJS -->
+<script src="<?php echo base_url() ?>admin-lte/plugins/chart.js/Chart.min.js"></script>
+<script>
+    //-------------
+    //- Qty Hasil -
+    //-------------
+    var areaChartData = {
+      labels  : ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+      datasets: [
+        {
+          label               : 'Digital Goods',
+          backgroundColor     : 'rgba(60,141,188,0.9)',
+          borderColor         : 'rgba(60,141,188,0.8)',
+          pointRadius          : false,
+          pointColor          : '#3b8bba',
+          pointStrokeColor    : 'rgba(60,141,188,1)',
+          pointHighlightFill  : '#fff',
+          pointHighlightStroke: 'rgba(60,141,188,1)',
+          data                : [28, 48, 40, 19, 86, 27, 90]
+        }
+      ]
+    }
+
+    var barChartCanvas = $('#barChart').get(0).getContext('2d')
+    var barChartData = $.extend(true, {}, areaChartData)
+    var temp1 = areaChartData.datasets[0]
+    barChartData.datasets[0] = temp1
+
+    var barChartOptions = {
+      responsive              : true,
+      maintainAspectRatio     : false,
+      datasetFill             : false
+    }
+
+    new Chart(barChartCanvas, {
+      type   : 'bar',
+      data   : barChartData,
+      options: barChartOptions
+    })
+
+    //-------------
+    //- Qty Waste -
+    //-------------
+    var areaChartData2 = {
+      labels  : ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+      datasets: [
+        {
+          label               : 'Electronics',
+          backgroundColor     : 'rgba(210, 214, 222, 1)',
+          borderColor         : 'rgba(210, 214, 222, 1)',
+          pointRadius         : false,
+          pointColor          : 'rgba(210, 214, 222, 1)',
+          pointStrokeColor    : '#c1c7d1',
+          pointHighlightFill  : '#fff',
+          pointHighlightStroke: 'rgba(220,220,220,1)',
+          data                : [65, 59, 80, 81, 56, 55, 40]
+        }
+      ]
+    }
+
+    var barChartCanvas2       = $('#barChart2').get(0).getContext('2d')
+    var barChartData2         = $.extend(true, {}, areaChartData2)
+    var temp2                 = areaChartData2.datasets[0]
+    barChartData2.datasets[0] = temp2
+
+    var barChartOptions2 = {
+      responsive              : true,
+      maintainAspectRatio     : true,
+      datasetFill             : true
+    }
+
+    new Chart(barChartCanvas2, {
+      type   : 'bar',
+      data   : barChartData2,
+      options: barChartOptions2
+    })
+</script>
 <?php echo $this->endSection(); ?>
