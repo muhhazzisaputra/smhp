@@ -11,11 +11,11 @@
       <div class="row">
           <div class="col-12 col-sm-6 col-md-3">
             <div class="info-box">
-              <span class="info-box-icon bg-primary elevation-1"><i class="fas fa-clipboard-check"></i></span>
+              <span class="info-box-icon bg-success elevation-1"><i class="fas fa-clipboard-check"></i></span>
 
               <div class="info-box-content">
                 <span class="info-box-text">Total Hasil(Kg)</span>
-                <span class="info-box-number"><?php echo number_format($total_hasil) ?></span>
+                <span class="info-box-number"><?php echo number_format($total_hasil,2) ?></span>
               </div>
               <!-- /.info-box-content -->
             </div>
@@ -24,11 +24,11 @@
           <!-- /.col -->
           <div class="col-12 col-sm-6 col-md-3">
             <div class="info-box mb-3">
-              <span class="info-box-icon bg-primary elevation-1"><i class="fas fa-trash-alt"></i></span>
+              <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-trash-alt"></i></span>
 
               <div class="info-box-content">
                 <span class="info-box-text">Total Waste(Kg)</span>
-                <span class="info-box-number"><?php echo $total_waste ?></span>
+                <span class="info-box-number"><?php echo number_format($total_waste,2) ?></span>
               </div>
               <!-- /.info-box-content -->
             </div>
@@ -41,7 +41,7 @@
 
           <div class="col-12 col-sm-6 col-md-3">
             <div class="info-box mb-3">
-              <span class="info-box-icon bg-primary elevation-1"><i class="fas fa-archive"></i></span>
+              <span class="info-box-icon bg-info elevation-1"><i class="fas fa-archive"></i></span>
 
               <div class="info-box-content">
                 <span class="info-box-text">Total Produk</span>
@@ -69,9 +69,9 @@
         <div class="row">
             <!-- BAR CHART -->
             <div class="col-12 col-sm-12 col-md-6">
-                <div class="card card-primary">
+                <div class="card card-sdefault">
                   <div class="card-header">
-                    <h3 class="card-title">Grafik Total Qty Hasil 2025</h3>
+                    <h3 class="card-title">Grafik Qty Hasil <?php echo $tahun ?></h3>
                   </div>
                   <div class="card-body">
                     <div class="chart">
@@ -83,9 +83,9 @@
             </div>
             <!-- BAR CHART -->
             <div class="col-12 col-sm-12 col-md-6">
-                <div class="card card-primary">
+                <div class="card card-default">
                   <div class="card-header">
-                    <h3 class="card-title">Grafik Total Qty Waste 2025</h3>
+                    <h3 class="card-title">Grafik Qty Waste <?php echo $tahun ?></h3>
                   </div>
                   <div class="card-body">
                     <div class="chart2">
@@ -106,18 +106,18 @@
     //- Qty Hasil -
     //-------------
     var areaChartData = {
-      labels  : ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+      labels  : [<?php echo $bulan_produksi ?>],
       datasets: [
         {
-          label               : 'Digital Goods',
-          backgroundColor     : 'rgba(60,141,188,0.9)',
+          label               : 'Qty Hasil',
+          backgroundColor     : '#28a745',
           borderColor         : 'rgba(60,141,188,0.8)',
           pointRadius          : false,
-          pointColor          : '#3b8bba',
+          pointColor          : '#28a745',
           pointStrokeColor    : 'rgba(60,141,188,1)',
           pointHighlightFill  : '#fff',
           pointHighlightStroke: 'rgba(60,141,188,1)',
-          data                : [28, 48, 40, 19, 86, 27, 90]
+          data                : [<?php echo $hasil_produksi ?>]
         }
       ]
     }
@@ -143,18 +143,18 @@
     //- Qty Waste -
     //-------------
     var areaChartData2 = {
-      labels  : ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+      labels  : [<?php echo $bulan_produksi ?>],
       datasets: [
         {
-          label               : 'Electronics',
-          backgroundColor     : 'rgba(210, 214, 222, 1)',
+          label               : 'Qty Waste',
+          backgroundColor     : '#dc3545',
           borderColor         : 'rgba(210, 214, 222, 1)',
           pointRadius         : false,
           pointColor          : 'rgba(210, 214, 222, 1)',
-          pointStrokeColor    : '#c1c7d1',
+          pointStrokeColor    : '#dc3545',
           pointHighlightFill  : '#fff',
           pointHighlightStroke: 'rgba(220,220,220,1)',
-          data                : [65, 59, 80, 81, 56, 55, 40]
+          data                : [<?php echo $waste_produksi ?>]
         }
       ]
     }

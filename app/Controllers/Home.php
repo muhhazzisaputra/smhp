@@ -3,6 +3,7 @@
 namespace App\Controllers;
 use App\Models\MenuModel;
 use App\Models\GroupModel;
+use App\Models\KaryawanModel;
 
 class Home extends BaseController
 {
@@ -10,11 +11,14 @@ class Home extends BaseController
     public function __construct()
     {
         if (!session()->get('logged_in')) { redirect()->to('/')->send(); exit; }
+        $this->id_user = session()->get('id_user');
     }
 
-    public function index()
-    {
+    public function index() {
+        $karyawanModel = new KaryawanModel();
+
         $data['judul'] = 'Home';
+        $data["user"]  = $karyawanModel->getRow($this->id_user);
 
         return view('v_home', $data);
 
